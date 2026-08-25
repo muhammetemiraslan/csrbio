@@ -12,6 +12,35 @@ const STAGE_LABELS = {
 
 let PRODUCTS = [];
 
+// ---------------- Uygulama Takvimi referans verisi (ürün listesinden bağımsız) ----------------
+// Bu liste sadece "hangi ürün hangi evrede" panelini beslemek için var;
+// Ürünler bölümü (site üzerindeki asıl ürün kartları) tamamen Supabase'den geliyor.
+const STAGE_REFERENCE = [
+  { name: "GRENFORCE", teaser: "Bor, bakır, demir, mangan, molibden ve çinko içeren zengin mikro besin karışımı.", stages: ["vejetatif", "ciceklenme"] },
+  { name: "FRUCTON", teaser: "Bor ve molibden kombinasyonu ile çiçek tozu canlılığını artırır, döllenmeyi destekler.", stages: ["ciceklenme", "meyve-tutumu", "irilesme"] },
+  { name: "BOMBARDIER", teaser: "Bitkisel kaynaklı amino asitler ve organik maddeler ile stres koşullarına hızlı direnç.", stages: ["vejetatif", "ciceklenme", "meyve-tutumu", "stres"] },
+  { name: "TOGGLE XL", teaser: "Sıvı deniz yosunu ve alginik asit ile kök gelişimi ve stres direnci.", stages: ["vejetatif", "ciceklenme", "meyve-tutumu", "irilesme", "stres"] },
+  { name: "TERRA SORB FOLİAR", teaser: "%6 serbest amino asit ve %20 organik madde ile don, kuraklık ve sıcaklık stresine direnç.", stages: ["vejetatif", "ciceklenme", "meyve-tutumu", "stres"] },
+  { name: "NUTRİMİN", teaser: "İkincil ve iz element katkılı organomineral yapı ile dengeli beslenme ve kök gelişimi.", stages: ["vejetatif", "ciceklenme", "irilesme"] },
+  { name: "NUTRILOP ZnB", teaser: "Bor ve çinko içeriği ile çiçek tozu canlılığı, döllenme ve meyve tutumunda maksimum verim.", stages: ["ciceklenme", "meyve-tutumu"] },
+  { name: "NUTRILOP Mg", teaser: "Yüksek magnezyum ve nitrat azotu ile klorofil sentezi ve fotosentez verimi.", stages: ["vejetatif", "irilesme"] },
+  { name: "NUTRILOP BOR", teaser: "Bor etanol amin formülasyonu ile çiçek tozu canlılığı ve şekil bozukluklarının önlenmesi.", stages: ["ciceklenme", "meyve-tutumu"] },
+  { name: "FERTİZYME -SP", teaser: "Zengin enzim ve organik bileşenlerle kök gelişimini tetikler, toprak biyolojisini canlandırır.", stages: ["vejetatif"] },
+  { name: "CYTOKIN PLUS", teaser: "Alginik asit ve organik maddelerle hücre bölünmesi, meyve irileşmesi ve gelişim hızlanır.", stages: ["ciceklenme", "meyve-tutumu", "irilesme", "stres"] },
+  { name: "BLACKJAK SC", teaser: "Yüksek hümik ve fulvik asit ile toprak yapısını düzenler, besin alımını maksimize eder.", stages: ["vejetatif", "stres"] },
+  { name: "ALAMIN ZN", teaser: "Yüksek çinko ve serbest amino asit içeriği ile enzim aktivitesi ve köklenme desteği.", stages: ["vejetatif", "ciceklenme"] },
+  { name: "ALAMIN CA", teaser: "Kalsiyum ve bor kombinasyonu ile hücre yapısı, meyve kalitesi ve raf ömrü artışı.", stages: ["meyve-tutumu", "irilesme"] },
+  { name: "AGROLEAF POWER 20-20-20", teaser: "Dengeli NPK içeriği ile vejetatif gelişimi ve genel bitki sağlığını eş zamanlı destekler.", stages: ["vejetatif", "stres"] },
+  { name: "AGROLEAF POWER 12-52-5", teaser: "Yüksek fosfor içeriğiyle kök gelişimini hızlandırır, çiçeklenme oranını artırır.", stages: ["vejetatif", "ciceklenme"] },
+  { name: "AGROLEAF POWER 11-5-19+9(CaO)", teaser: "Yüksek kalsiyum, magnezyum ve potasyum ile hücre duvarını güçlendirir, raf ömrünü artırır.", stages: ["meyve-tutumu", "irilesme"] },
+  { name: "CROP+EXTRA", teaser: "Zengin organik madde ve dengeli NPK içeriği ile döllenmeyi ve çiçek tutumunu düzenler.", stages: ["ciceklenme", "meyve-tutumu", "irilesme"] },
+  { name: "ZN MN FOLİAR", teaser: "Yüksek çinko ve mangan ile enzim aktivitesini hızlandırır, sararmaları tedavi eder.", stages: ["vejetatif"] },
+  { name: "MAX CUAJE", teaser: "Yüksek fosfor, bor ve molibden desteği ile çiçek dökümünü azaltır, meyve tutumunu artırır.", stages: ["ciceklenme", "meyve-tutumu"] },
+  { name: "CALMAG", teaser: "Kalsiyum ve magnezyum ile hücre duvarını güçlendirir, fizyolojik bozuklukları önler.", stages: ["vejetatif", "meyve-tutumu", "irilesme"] },
+  { name: "AMİNOQ", teaser: "Yüksek amino asit ve organik madde içeriği ile kök gelişimi ve bitki canlılığı desteği.", stages: ["vejetatif", "ciceklenme", "stres"] },
+  { name: "CLEAN PRO", teaser: "pH regülatörü ve dezenfektan; ateş yanıklığı, dal kanseri gibi bakteriyel hastalıkları durdurur.", stages: ["vejetatif", "stres"] }
+];
+
 // ---------------- Count-up stats ----------------
 function animateCount(el){
   const raw = el.textContent.trim();
@@ -156,7 +185,7 @@ const stageTabs = document.getElementById("stageTabs");
 const stagePanel = document.getElementById("stagePanel");
 
 function renderStage(stageKey){
-  const matches = PRODUCTS.filter(p => p.stages.includes(stageKey));
+  const matches = STAGE_REFERENCE.filter(p => p.stages.includes(stageKey));
   stagePanel.innerHTML = matches.map(p => `
     <div class="stage-chip">
       <h4>${p.name}</h4>
@@ -181,14 +210,6 @@ renderStage("vejetatif");
 
 // ---------------- Misc ----------------
 document.getElementById("year").textContent = new Date().getFullYear();
-
-const newsletterForm = document.getElementById("newsletterForm");
-newsletterForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const input = newsletterForm.querySelector("input");
-  input.value = "";
-  input.placeholder = "Kaydınız alındı, teşekkürler!";
-});
 
 // ---------------- Ürünler (Supabase — tek kaynak) ----------------
 const SUPABASE_URL = "https://xrzonxgaoanhoijloyag.supabase.co";
