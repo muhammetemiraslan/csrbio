@@ -212,8 +212,8 @@
     </div>
 
     <div class="hero__stats">
-      <div><span>23</span><small>Formülasyon</small></div>
-      <div><span>3</span><small>Güvenilir Marka</small></div>
+      <div><span id="statFormulasyon">0</span><small>Formülasyon</small></div>
+      <div><span id="statMarka">0</span><small>Güvenilir Marka</small></div>
       <div><span>5</span><small>Gelişim Evresi</small></div>
     </div>
   </div>
@@ -302,9 +302,10 @@
       <button class="brand-tab" data-brand="ALTINTAR">Altıntar</button>
     </div>
 
-    <div class="product-grid" id="productGrid">
-      <!-- JS ile doldurulacak -->
-    </div>
+    <p id="productsLoading" class="blog-hint">Yükleniyor...</p>
+    <p id="productsEmpty" class="blog-hint" hidden>Henüz ürün eklenmedi, çok yakında burada olacak.</p>
+
+    <div class="product-grid" id="productGrid"></div>
   </div>
 </section>
 

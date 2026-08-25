@@ -10,324 +10,7 @@ const STAGE_LABELS = {
   "stres":         "Stres & Toparlanma"
 };
 
-const PRODUCTS = [
-  // ---------------- KIMITEC ----------------
-  {
-    name: "GRENFORCE",
-    brand: "KIMITEC",
-    image: "img/products/grenforce.jpeg",
-    teaser: "Bor, bakır, demir, mangan, molibden ve çinko içeren zengin mikro besin karışımı.",
-    stages: ["vejetatif", "ciceklenme"],
-    bullets: [
-      "İçeriğindeki bor, bakır, demir, mangan, molibden ve çinko gibi zengin mikro besin elementleri karışımı sayesinde meyve ve sebzelerde eksikliklerin giderilmesini sağlayarak dengeli bir beslenme sunar.",
-      "Çinko ve mangan gibi elementler bitkide enzim faaliyetlerini, protein sentezini ve azot metabolizmasını destekleyerek genel bitki sağlığını güçlendirir.",
-      "Fotosentez kalitesini geliştirir, bitkinin besin elementlerinden daha etkin yararlanmasına imkan tanır ve verimlilik ile ürün kalitesini artırır.",
-      "Meyve ağaçlarında vejetatif gelişimin yoğun olduğu dönemlerde ve özellikle %5-10 çiçek dönemi uygulandığında meyvenin genetik kodunun yazılmasında büyük rol oynar.",
-      "Sebzelerde büyüme sezonu boyunca bitkinin iz element ihtiyaçlarını karşılamak ve genel gelişimini desteklemek amacıyla düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "FRUCTON",
-    brand: "KIMITEC",
-    image: "img/products/fructon.jpeg",
-    teaser: "Bor ve molibden kombinasyonu ile çiçek tozu canlılığını artırır, döllenmeyi destekler.",
-    stages: ["ciceklenme", "meyve-tutumu", "irilesme"],
-    bullets: [
-      "İçeriğindeki bor ve molibden kombinasyonu ile meyve ve sebzelerde çiçek tozunun canlılığını artırarak döllenmeyi ve meyve tutumunu güçlü bir şekilde destekler.",
-      "Hücre bölünmesini ve polen tüpü gelişimini teşvik ederek meyve ve sebzelerde şekil bozukluklarını önler, irileşmeyi ve pazar kalitesini artırır.",
-      "Özellikle hasattan 18-20 gün önce uygulandığında iç dolgunluğu yaptırarak rekoltede fark yaratır.",
-      "Meyve ağaçlarında çiçeklenme öncesinde, çiçeklenme döneminde ve meyve tutum periyodunda uygulanabilir.",
-      "Sebzelerde çiçeklenmeden hemen önceki dönemde, çiçeklenme başlangıcında ve meyve bağlama evresinde düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "BOMBARDIER",
-    brand: "KIMITEC",
-    image: null,
-    teaser: "Bitkisel kaynaklı amino asitler ve organik maddeler ile stres koşullarına hızlı direnç.",
-    stages: ["vejetatif", "ciceklenme", "meyve-tutumu", "stres"],
-    bullets: [
-      "İçeriğindeki zengin bitkisel kaynaklı amino asitler ve organik maddeler sayesinde meyve ve sebzelerde stres koşullarına karşı hızlı bir direnç ve toparlanma sağlar.",
-      "Bitkinin metabolik faaliyetlerini ve protein sentezini hızlandırarak vejetatif gelişimi, köklenmeyi ve genel verimliliği güçlü bir şekilde destekler.",
-      "Diğer tarım ilaçları ve gübrelerle birlikte kullanıldığında yapraktan emilimi artırarak (taşıyıcı etki) uygulanan besinlerin etkinliğini yükseltir.",
-      "Meyve ağaçlarında vejetatif büyüme başlangıcında, çiçeklenme öncesinde, meyve tutumunda ve stres koşullarının görüldüğü periyotlarda uygulanabilir.",
-      "Sebzelerde şaşırtma anında, gelişimi hızlandırmak ve büyüme sezonu boyunca bitkiyi desteklemek amacıyla düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "TOGGLE XL",
-    brand: "ALTINTAR",
-    image: null,
-    teaser: "Sıvı deniz yosunu ve alginik asit ile kök gelişimi ve stres direnci.",
-    stages: ["vejetatif", "ciceklenme", "meyve-tutumu", "irilesme", "stres"],
-    bullets: [
-      "İçeriğindeki yüksek kaliteli sıvı deniz yosunu ve alginik asit sayesinde meyve ve sebzelerde kök gelişimini teşvik eder ve stres koşullarına (sıcaklık, kuraklık vb.) karşı direnci artırır.",
-      "Doğal bitki gelişim düzenleyicileri ile çiçeklenmeyi, meyve tutumunu ve kalitesini destekleyerek verim kaybını önler.",
-      "İçerdiği suda çözünür potasyum ve organik maddelerle meyve ve sebzelerin irileşmesini, renk ve doku kalitesini iyileştirir.",
-      "Meyve ağaçlarında vejetatif gelişimin başlangıcında, çiçeklenme öncesinde ve meyve irileşme sürecinde periyodik olarak uygulanabilir.",
-      "Sebzelerde fide dikimi sonrasında köklenmeyi hızlandırmak, büyüme sezonu boyunca bitkiyi desteklemek ve stres dönemlerini atlatmak amacıyla düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "TERRA SORB FOLİAR",
-    brand: "ALTINTAR",
-    image: "img/products/terra-sorb-foliar.jpeg",
-    teaser: "%6 serbest amino asit ve %20 organik madde ile don, kuraklık ve sıcaklık stresine direnç.",
-    stages: ["vejetatif", "ciceklenme", "meyve-tutumu", "stres"],
-    bullets: [
-      "Bitkisel menşeli yüksek serbest amino asit (%6) ve organik madde (%20) içeriği sayesinde meyve ve sebzelerde stres koşullarına (don, kuraklık, sıcaklık stresi vb.) karşı hızlı bir direnç ve toparlanma sağlar.",
-      "Bitki tarafından doğrudan bünyesine alınan serbest amino asitler, metabolik faaliyetleri ve protein sentezini hızlandırarak bitkinin gelişimini ve verimliliğini maksimum düzeyde destekler.",
-      "Diğer tarım ilaçları ve gübrelerle birlikte kullanıldığında yapraktan emilimi ve taşınmayı artırarak (taşıyıcı/sticker etkisi) uygulanan diğer besinlerin etkinliğini yükseltir.",
-      "Meyve ağaçlarında vejetatif büyüme başlangıcında, çiçeklenme döneminde, meyve tutumunda ve stres koşullarının görüldüğü kritik periyotlarda güvenle uygulanabilir.",
-      "Sebzelerde köklenmeyi hızlandırmak, vejetatif gelişimi hızlandırmak ve meyve bağlama süreçlerinde düzenli aralıklarla yapraktan kullanılabilir."
-    ]
-  },
-  {
-    name: "NUTRİMİN",
-    brand: "ALTINTAR",
-    image: "img/products/nutrimin.jpeg",
-    teaser: "İkincil ve iz element katkılı organomineral yapı ile dengeli beslenme ve kök gelişimi.",
-    stages: ["vejetatif", "ciceklenme", "irilesme"],
-    bullets: [
-      "İçeriğindeki ikincil ve iz element katkılı katı organomineral yapısı sayesinde meyve ve sebzelerin dengeli beslenmesini sağlayarak kök gelişimini ve genel bitki direncini güçlendirir.",
-      "Bitkinin enzim faaliyetlerini ve fotosentez kapasitesini artırarak ürünlerin kalite standartlarını, renk oluşumunu ve pazar değerini doğrudan destekler.",
-      "Toprağın verimliliğini artırarak besin elementlerinin alımını kolaylaştırır ve olumsuz çevre koşullarına karşı bitkinin direncini yükseltir.",
-      "Meyve ağaçlarında vejetatif büyüme başlangıcında, çiçeklenme öncesi dönemde ve meyve irileşme sürecinde periyodik olarak uygulanabilir.",
-      "Sebzelerde fide dikimi ile birlikte, bitkinin gelişim sezonu boyunca iz element ihtiyacının karşılanması gereken kritik dönemlerde düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "NUTRILOP ZnB",
-    brand: "ALTINTAR",
-    image: "img/products/nutrilop-znb.jpeg",
-    teaser: "Bor ve çinko içeriği ile çiçek tozu canlılığı, döllenme ve meyve tutumunda maksimum verim.",
-    stages: ["ciceklenme", "meyve-tutumu"],
-    bullets: [
-      "Bor ve çinko içeriği sayesinde meyve ve sebzelerde çiçek tozunun canlılığını artırarak döllenmeyi ve meyve tutum oranını en üst seviyeye çıkarır.",
-      "Hücre bölünmesini ve hormon sentezini destekleyerek bitkinin büyüme uçlarının sağlıklı gelişmesini sağlar, şekil bozukluklarını engeller.",
-      "Bitkinin mikro element ihtiyaçlarını karşılayarak stres koşullarına karşı direncini yükseltir ve ürün kalitesini doğrudan iyileştirir.",
-      "Meyve ağaçlarında çiçek tomurcuklarının belirginleştiği dönemde, çiçeklenme öncesinde ve meyve tutum periyodunda uygulanabilir.",
-      "Sebzelerde çiçeklenmeden hemen önceki dönemde, çiçeklenme başlangıcında ve meyve bağlama evresinde düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "NUTRILOP Mg",
-    brand: "ALTINTAR",
-    image: "img/products/nutrilop-mg.jpeg",
-    teaser: "Yüksek magnezyum ve nitrat azotu ile klorofil sentezi ve fotosentez verimi.",
-    stages: ["vejetatif", "irilesme"],
-    bullets: [
-      "İçeriğindeki yüksek magnezyum ve nitrat azotu sayesinde klorofil sentezini maksimum düzeyde destekleyerek meyve ve sebzelerde yeşil aksamı ve fotosentez verimini artırır.",
-      "Molibden katkısı ile bitkinin azot metabolizmasını optimize eder, yaşlı yapraklarda sararmaları önleyerek sağlıklı ve güçlü bir bitki gelişimi sağlar.",
-      "Meyve ve sebzelerin besin maddelerinden etkin bir şekilde yararlanmasına imkan tanır, meyve kalitesini ve genel verimliliği doğrudan destekler.",
-      "Meyve ağaçlarında yaprak gelişiminin yoğun olduğu dönemlerde, meyve irileşme sürecinde ve magnezyum noksanlığı gözlenen periyotlarda uygulanabilir.",
-      "Sebzelerde hızlı büyüme evresinde, meyve tutumu sonrasında ve yapraklarda fotosentezi engelleyecek sararmalar meydana geldiğinde düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "NUTRILOP BOR",
-    brand: "ALTINTAR",
-    image: "img/products/nutrilop-bor.jpeg",
-    teaser: "Bor etanol amin formülasyonu ile çiçek tozu canlılığı ve şekil bozukluklarının önlenmesi.",
-    stages: ["ciceklenme", "meyve-tutumu"],
-    bullets: [
-      "İçeriğindeki bor etanol amin formülasyonu sayesinde meyve ve sebzelerde çiçek tozunun canlılığını artırarak döllenmeyi ve meyve tutumunu güçlü bir şekilde destekler.",
-      "Hücre duvarı sentezinde ve şeker taşınımında kritik rol oynayarak meyve ve sebzelerde şekil bozukluklarını önler, ürün kalitesini ve pazar değerini yükseltir.",
-      "Bitkinin büyüme uçlarının sağlıklı gelişmesini sağlayarak sürgün gelişimini optimize eder ve verim kayıplarının önüne geçer.",
-      "Meyve ağaçlarında çiçek tomurcuklarının belirginleştiği dönemde, çiçeklenme döneminde ve hasat sonrası uygulanabilir.",
-      "Sebzelerde çiçeklenmeden hemen önceki dönemde, çiçeklenme başlangıcında ve meyve tutumunu artırmak amacıyla düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "FERTİZYME -SP",
-    brand: "ALTINTAR",
-    image: "img/products/fertizyme-sp.jpeg",
-    teaser: "Zengin enzim ve organik bileşenlerle kök gelişimini tetikler, toprak biyolojisini canlandırır.",
-    stages: ["vejetatif"],
-    bullets: [
-      "İçeriğindeki zengin enzimler ve organik bileşenler sayesinde meyve ve sebzelerde kök gelişimini muazzam seviyede tetikleyerek bitkinin topraktaki besin elementlerini daha etkin kullanmasını sağlar.",
-      "Toprak biyolojisini canlandırarak bitki kök bölgesindeki yararlı mikroorganizma faaliyetlerini artırır, böylece daha güçlü ve sağlıklı bir bitki yapısı oluşumuna destek olur.",
-      "Çevresel ve toprak kaynaklı stres faktörlerine karşı bitkinin direncini yükselterek, köklerin besin emilim kapasitesini maksimize eder ve genel verimliliği artırır.",
-      "Meyve fidanlarında güçlü kök yapısı oluşturmak için düzenli olarak kullanılabilir.",
-      "Sebzelerde fide dikimi ile birlikte kök gelişimini teşvik etmek amacıyla, büyüme sezonu boyunca bitkide güçsüzlük görüldüğü dönemlerde düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "CYTOKIN PLUS",
-    brand: "ALTINTAR",
-    image: "img/products/cytokin-plus.jpeg",
-    teaser: "Alginik asit ve organik maddelerle hücre bölünmesi, meyve irileşmesi ve gelişim hızlanır.",
-    stages: ["ciceklenme", "meyve-tutumu", "irilesme", "stres"],
-    bullets: [
-      "İçeriğindeki alginik asit ve bitkisel kaynaklı organik maddeler sayesinde meyve ve sebzelerde hücre bölünmesini teşvik ederek meyve irileşmesini ve bitki gelişimini hızlandırır.",
-      "Bitki hormonlarını dengeleyici etkisi ile meyve ve sebzelerin çiçeklenme sonrası meyve bağlama kapasitesini artırarak verim kaybını minimize eder.",
-      "Stres koşullarına karşı bitkinin doğal direncini güçlendirir, meyve ve sebzelerde daha homojen, kaliteli ve pazar değeri yüksek ürünler oluşmasına yardımcı olur.",
-      "Meyve ağaçlarında çiçeklenme sonrasında meyve tutumunu desteklemek amacıyla ve meyve irileşme dönemlerinde periyodik olarak uygulanabilir.",
-      "Sebzelerde çiçeklenme başlangıcından itibaren meyve gelişimi süresince, bitkinin büyüme enerjisini korumak için düzenli aralıklarla kullanılabilir."
-    ]
-  },
-  {
-    name: "BLACKJAK SC",
-    brand: "ALTINTAR",
-    image: "img/products/blackjak-sc.jpeg",
-    teaser: "Yüksek hümik ve fulvik asit ile toprak yapısını düzenler, besin alımını maksimize eder.",
-    stages: ["vejetatif", "stres"],
-    bullets: [
-      "Yüksek oranda hümik ve fulvik asit içeren özel formülasyonu ile meyve ve sebzelerde toprağın yapısını düzenler, toprağa bağlanmış şekilde bulunan besin elementlerinin bitki tarafından alımını maksimum düzeye çıkarır.",
-      "Kök gelişimini güçlü bir şekilde teşvik ederek meyve ve sebzelerin topraktan su ve besin elementi çekme kapasitesini artırır, bitkiyi daha dayanıklı hale getirir.",
-      "Stres koşullarına (kuraklık, tuzluluk, pH dengesizliği vb.) karşı bitkinin direncini artırarak verim kaybını önler ve ürün kalitesinin iyileşmesine yardımcı olur.",
-      "Meyve ve sebzelerde her periyotta düzenli aralıklar ile kullanılabilir. Düşük pH değeri ile diğer gübreler ile kullanıldığında hızlı alınım ve taşınma sağlar."
-    ]
-  },
-  {
-    name: "ALAMIN ZN",
-    brand: "ALTINTAR",
-    image: "img/products/alamin-zn.jpeg",
-    teaser: "Yüksek çinko ve serbest amino asit içeriği ile enzim aktivitesi ve köklenme desteği.",
-    stages: ["vejetatif", "ciceklenme"],
-    bullets: [
-      "Yüksek çinko ve serbest amino asit içeriği sayesinde meyve ve sebzelerde enzim aktivitesini hızlandırarak bitki gelişimini ve köklenmeyi güçlü bir şekilde destekler.",
-      "Çinkonun bitki içi hormon sentezindeki rolüyle çiçeklenmeyi teşvik eder ve mikro element noksanlığından kaynaklanan yaprak küçülmeleri ile gelişim geriliklerini önler.",
-      "Organik madde desteği ile besin elementlerinin alımını kolaylaştırarak meyve ve sebzelerin kalitesini, verimini ve hastalıklara karşı direncini artırır.",
-      "Meyve ağaçlarında vejetatif büyümenin başladığı ilkbahar döneminde, çiçeklenme öncesinde ve sürgün gelişim periyotlarında uygulanabilir.",
-      "Sebzelerde fide dikiminden hemen sonra şoku atlatmak, gelişimi hızlandırmak ve çiçeklenme öncesi dönemde düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "ALAMIN CA",
-    brand: "ALTINTAR",
-    image: "img/products/alamin-ca.jpeg",
-    teaser: "Kalsiyum ve bor kombinasyonu ile hücre yapısı, meyve kalitesi ve raf ömrü artışı.",
-    stages: ["meyve-tutumu", "irilesme"],
-    bullets: [
-      "İçeriğindeki kalsiyum ve bor kombinasyonu, meyve ve sebzelerde hücre yapısını güçlendirerek meyve kalitesini, dayanıklılığını ve raf ömrünü doğrudan artırır.",
-      "Organik madde ve serbest amino asit desteği, kalsiyumun bitki bünyesinde hızlı taşınmasını sağlayarak meyve çatlamalarını ve fizyolojik bozuklukları minimize eder.",
-      "Bitkinin çiçeklenme ve meyve bağlama dönemlerinde ihtiyaç duyduğu kalsiyumu sağlayarak, daha sağlıklı ve pazar değeri yüksek ürünler elde edilmesine yardımcı olur.",
-      "Meyve ağaçlarında meyve tutumu sonrası gelişme döneminden hasat öncesine kadar kalsiyum ihtiyacının yüksek olduğu evrelerde periyodik olarak kullanılabilir.",
-      "Sebzelerde bağlama döneminden itibaren sebze irileşme süreci boyunca ihtiyaç duyulan dönemlerde düzenli olarak uygulanabilir."
-    ]
-  },
-
-  // ---------------- AGROLEAF POWER ----------------
-  {
-    name: "AGROLEAF POWER 20-20-20",
-    brand: "ALTINTAR",
-    image: "img/products/agroleaf-power-total.jpeg",
-    teaser: "Dengeli NPK içeriği ile vejetatif gelişimi ve genel bitki sağlığını eş zamanlı destekler.",
-    stages: ["vejetatif", "stres"],
-    bullets: [
-      "Dengeli NPK içeriği, meyve ve sebzelerde hem vejetatif gelişimi hem de genel bitki sağlığını eş zamanlı olarak destekleyerek dengeli bir beslenme sağlar.",
-      "İçeriğindeki özel M-77 chelating ajanı ve iz element (TE) takviyesi, besin maddelerinin yapraktan hızlı ve etkin bir şekilde alınmasına olanak tanıyarak bitki metabolizmasını güçlendirir.",
-      "Bitkinin her türlü gelişim döneminde ihtiyaç duyduğu ana besinleri karşılayarak, bitkinin stres koşullarına karşı toleransını artırır ve genel verimliliği yükseltir."
-    ]
-  },
-  {
-    name: "AGROLEAF POWER 12-52-5",
-    brand: "ALTINTAR",
-    image: "img/products/agroleaf-power-highp.jpeg",
-    teaser: "Yüksek fosfor içeriğiyle kök gelişimini hızlandırır, çiçeklenme oranını artırır.",
-    stages: ["vejetatif", "ciceklenme"],
-    bullets: [
-      "Yüksek fosfor içeriği sayesinde meyve ve sebzelerde kök sisteminin gelişimini hızlandırır, çiçeklenme oranını ve çiçek kalitesini artırır.",
-      "İçeriğindeki özel M-77 formülasyonu ve dengeli iz element (TE) takviyesi, besin maddelerinin yapraktan en üst düzeyde alınmasını sağlayarak bitki direncini artırır.",
-      "Çiçeklenme öncesi ve çiçek tutum döneminde bitkinin enerji ihtiyacını karşılayarak dökülmeleri azaltır ve sağlıklı meyve bağlamayı destekler.",
-      "Meyve ağaçlarında ilkbaharda çiçek tomurcuklarının gelişim döneminde ve çiçeklenme periyotlarında uygulanabilir.",
-      "Sebzelerde fide dikiminden hemen sonra köklenmeyi teşvik etmek amacıyla ve çiçeklenmeden hemen önceki dönemde düzenli olarak kullanılabilir."
-    ]
-  },
-  {
-    name: "AGROLEAF POWER 11-5-19+9(CaO)",
-    brand: "ALTINTAR",
-    image: "img/products/agroleaf-power-calcium.jpeg",
-    teaser: "Yüksek kalsiyum, magnezyum ve potasyum ile hücre duvarını güçlendirir, raf ömrünü artırır.",
-    stages: ["meyve-tutumu", "irilesme"],
-    bullets: [
-      "Yüksek kalsiyum (%9 CaO), magnezyum ve potasyum içeriğiyle meyve ve sebzelerde hücre duvarlarını güçlendirerek meyve kalitesini, sertliğini ve raf ömrünü artırır.",
-      "Özel M-77 chelating ajanı ve iz element (TE) takviyesi sayesinde besin maddelerinin yapraktan hızlı ve kayıpsız bir şekilde emilmesini sağlayarak bitki metabolizmasını destekler.",
-      "Çiçek burnu çürüklüğü ve acı benek gibi kalsiyum noksanlığından kaynaklanan fizyolojik bozuklukların önlenmesinde yüksek etki gösterir.",
-      "Meyve ağaçlarında meyve tutumundan itibaren irileşme dönemi boyunca ve hasada kadar belirli aralıklarla uygulanabilir.",
-      "Sebzelerde hızlı büyüme döneminden itibaren meyve oluşumu ve gelişimi sürecinde düzenli periyotlarla kullanılabilir."
-    ]
-  },
-
-  // ---------------- AGRO ATP ----------------
-  {
-    name: "CROP+EXTRA",
-    brand: "AGRO ATP",
-    image: "img/products/crop-extra.jpeg",
-    teaser: "Zengin organik madde ve dengeli NPK içeriği ile döllenmeyi ve çiçek tutumunu düzenler.",
-    stages: ["ciceklenme", "meyve-tutumu", "irilesme"],
-    bullets: [
-      "Bitkisel menşeli zengin organik madde ve dengeli NPK içeriği sayesinde meyve ve sebzelerde döllenmeyi artırarak çiçek tutumunu ve genetik kodların oluşmasını düzenler.",
-      "İçeriğindeki mikro elementler (demir, çinko, mangan, bakır vb.) bitkinin metabolik fonksiyonlarını optimize ederek daha sağlıklı, canlı ve hastalıklara dirençli bir yapı kazandırır.",
-      "Bitki besin elementlerinin alımını kolaylaştırarak, meyve ve sebzelerin kalite standartlarını (renk, irilik, tat) üst seviyeye taşır."
-    ]
-  },
-  {
-    name: "ZN MN FOLİAR",
-    brand: "AGRO ATP",
-    image: "img/products/zn-mn-foliar.jpeg",
-    teaser: "Yüksek çinko ve mangan ile enzim aktivitesini hızlandırır, sararmaları tedavi eder.",
-    stages: ["vejetatif"],
-    bullets: [
-      "İçeriğindeki yüksek çinko ve mangan sayesinde sebzelerde enzim aktivitesini hızlandırarak fotosentez kapasitesini ve bitki büyüme hızını belirgin şekilde artırır.",
-      "Bitkide çinko ve mangan eksikliğine bağlı olarak görülen yaprak sararmalarını, küçük yaprak oluşumunu ve gelişme geriliklerini hızla tedavi eder.",
-      "Sebzelerin stres koşullarına karşı dayanıklılığını güçlendirir, meyve kalitesini artırarak daha homojen ve sağlıklı ürün gelişimi sağlar.",
-      "Sebzelerde vejetatif gelişimin yoğun olduğu fide döneminden itibaren, büyüme süreci boyunca noksanlık belirtileri görülmeden önce önleyici olarak veya eksiklik hissedildiğinde uygulanabilir."
-    ]
-  },
-  {
-    name: "MAX CUAJE",
-    brand: "AGRO ATP",
-    image: "img/products/max-cuaje.jpeg",
-    teaser: "Yüksek fosfor, bor ve molibden desteği ile çiçek dökümünü azaltır, meyve tutumunu artırır.",
-    stages: ["ciceklenme", "meyve-tutumu"],
-    bullets: [
-      "Yüksek fosfor içeriği ve bor-molibden desteği ile sebzelerde çiçeklenmeyi teşvik eder, çiçek dökümlerini azaltarak meyve tutumunu maksimuma çıkarır.",
-      "İçeriğindeki iz elementler (çinko, mangan), sebzelerin metabolik faaliyetlerini hızlandırarak döllenme kalitesini artırır ve daha sağlıklı meyve oluşumu sağlar.",
-      "Bitkinin enerji transferini güçlendirerek sebzelerin erken dönem gelişimini destekler ve çiçekten meyveye geçiş sürecinde ihtiyaç duyulan besinleri doğrudan sağlar.",
-      "Sebzelerde çiçeklenme başlangıcından tam çiçeklenme dönemine kadar ve meyve tutumunu garanti altına almak amacıyla kritik dönemlerde uygulanabilir."
-    ]
-  },
-  {
-    name: "CALMAG",
-    brand: "AGRO ATP",
-    image: "img/products/calmag.jpeg",
-    teaser: "Kalsiyum ve magnezyum ile hücre duvarını güçlendirir, fizyolojik bozuklukları önler.",
-    stages: ["vejetatif", "meyve-tutumu", "irilesme"],
-    bullets: [
-      "İçeriğindeki kalsiyum ve magnezyum sayesinde sebzelerde hücre duvarlarını güçlendirerek meyve sertliğini artırır ve fizyolojik bozuklukların (çiçek burnu çürüklüğü vb.) önüne geçer.",
-      "Magnezyum desteği ile bitkide klorofil üretimini teşvik ederek fotosentez verimini artırır, böylece daha yeşil, canlı ve gelişmiş bir yaprak yapısı sağlar.",
-      "Amino asitlerle şelatlı yapısı, besin elementlerinin sebzeler tarafından hızlı ve kolay bir şekilde alınıp taşınmasına olanak tanır.",
-      "Sebzelerde hızlı büyüme döneminde, meyve tutumu ile birlikte meyve irileşme sürecinde ve kalsiyum ihtiyacının zirve yaptığı dönemlerde düzenli olarak uygulanabilir."
-    ]
-  },
-  {
-    name: "AMİNOQ",
-    brand: "AGRO ATP",
-    image: "img/products/aminoq.jpeg",
-    teaser: "Yüksek amino asit ve organik madde içeriği ile kök gelişimi ve bitki canlılığı desteği.",
-    stages: ["vejetatif", "ciceklenme", "stres"],
-    bullets: [
-      "Bitkisel menşeli yüksek amino asit ve organik madde içeriği sayesinde sebzelerde kök gelişimini ve bitki canlılığını güçlü bir şekilde destekler.",
-      "Serbest amino asitler ve potasyum içeriği, sebzelerde çiçeklenme ve meyve bağlama oranını artırarak verim kayıplarını önler.",
-      "Sıcaklık şoku, kuraklık ve dikim şoku gibi çevresel stres faktörlerine karşı sebzelerin direncini ve adaptasyon yeteneğini maksimum düzeyde yükseltir.",
-      "Sebzelerde fide dikiminden hemen sonra, çiçeklenme öncesi dönemde ve stresli hava koşullarında düzenli olarak kullanılabilir."
-    ]
-  },
-  // ---------------- CSR BIO ----------------
-  {
-    name: "CLEAN PRO",
-    brand: "AGRO ATP",
-    image: "img/products/clean-pro.jpeg",
-    teaser: "pH regülatörü ve dezenfektan; ateş yanıklığı, dal kanseri gibi bakteriyel hastalıkları durdurur.",
-    stages: ["vejetatif", "stres"],
-    bullets: [
-      "Ateş yanıklığı, dal kanseri, bakteriyel kanser gibi bakteriyel hastalıkları durdurarak ilerlemeyi keser.",
-      "Seralarda veya açık arazilerde demir, tarım ekipmanları vb. yüzeylerde dezenfektan görevi görür."
-    ]
-  }
-];
+let PRODUCTS = [];
 
 // ---------------- Count-up stats ----------------
 function animateCount(el){
@@ -507,16 +190,41 @@ newsletterForm.addEventListener("submit", (e) => {
   input.placeholder = "Kaydınız alındı, teşekkürler!";
 });
 
-// ---------------- Admin panelinden eklenen ürünler (Supabase) ----------------
+// ---------------- Ürünler (Supabase — tek kaynak) ----------------
 const SUPABASE_URL = "https://xrzonxgaoanhoijloyag.supabase.co";
 const SUPABASE_KEY = "sb_publishable_t_DLqABupEfr5goqtOW2JA_gwrFim-g";
 
+const productsLoadingEl = document.getElementById("productsLoading");
+const productsEmptyEl = document.getElementById("productsEmpty");
+const statFormulasyon = document.getElementById("statFormulasyon");
+const statMarka = document.getElementById("statMarka");
+
+function updateProductStats(){
+  if(!statFormulasyon || !statMarka) return;
+  const brandCount = new Set(PRODUCTS.map(p => p.brand).filter(Boolean)).size;
+  statFormulasyon.textContent = String(PRODUCTS.length);
+  statMarka.textContent = String(brandCount);
+  animateCount(statFormulasyon);
+  animateCount(statMarka);
+}
+
 async function loadSupabaseProducts(){
-  if(!window.supabase) return;
+  if(!window.supabase){
+    if(productsLoadingEl) productsLoadingEl.hidden = true;
+    if(productsEmptyEl) productsEmptyEl.hidden = false;
+    return;
+  }
   try{
     const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     const { data, error } = await sbClient.from("product").select("*").order("created_at", { ascending: false });
-    if(error || !data || !data.length) return;
+
+    if(productsLoadingEl) productsLoadingEl.hidden = true;
+
+    if(error || !data || !data.length){
+      if(productsEmptyEl) productsEmptyEl.hidden = false;
+      updateProductStats();
+      return;
+    }
 
     const mapped = data.map(row => {
       const desc = (row.description || "").trim();
@@ -535,8 +243,11 @@ async function loadSupabaseProducts(){
 
     PRODUCTS.push(...mapped);
     renderProducts();
+    updateProductStats();
   } catch(e){
-    // Sessizce geç — statik ürün kataloğu zaten gösteriliyor
+    if(productsLoadingEl) productsLoadingEl.hidden = true;
+    if(productsEmptyEl) productsEmptyEl.hidden = false;
+    updateProductStats();
   }
 }
 loadSupabaseProducts();
