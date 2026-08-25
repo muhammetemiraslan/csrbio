@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSR BİO | Admin Panel</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- GİRİŞ EKRANI -->
+<div class="admin-login" id="loginView">
+  <form class="admin-login__card" id="loginForm">
+    <span class="logo__text" style="justify-content:center; display:flex; margin-bottom:8px;">CSR <strong>BIO</strong></span>
+    <p class="admin-login__subtitle">Admin Paneli</p>
+
+    <label class="admin-field">
+      <span>E-posta</span>
+      <input type="email" id="loginEmail" required autocomplete="username">
+    </label>
+    <label class="admin-field">
+      <span>Şifre</span>
+      <input type="password" id="loginPassword" required autocomplete="current-password">
+    </label>
+
+    <p class="admin-error" id="loginError" hidden></p>
+
+    <button type="submit" class="btn btn--primary" id="loginBtn">Giriş Yap</button>
+  </form>
+</div>
+
+<!-- ADMIN PANELİ -->
+<div class="admin-dashboard" id="dashboardView" hidden>
+  <header class="admin-header">
+    <span class="logo__text logo__text--light">CSR <strong>BIO</strong></span>
+    <span class="admin-header__tag">Admin Panel</span>
+    <div class="admin-header__right">
+      <span id="userEmail" class="admin-header__email"></span>
+      <button class="btn btn--ghost-dark" id="logoutBtn">Çıkış Yap</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="admin-tabs" id="adminTabs">
+      <button type="button" class="admin-tab is-active" data-tab="products">Ürünler</button>
+      <button type="button" class="admin-tab" data-tab="blog">Blog Yazıları</button>
+    </div>
+
+    <!-- ÜRÜNLER SEKMESİ -->
+    <div class="admin-tab-panel" id="tabProducts">
+      <section class="admin-panel">
+        <div class="admin-panel__head">
+          <h2 id="formTitle">Yeni Ürün Ekle</h2>
+          <button type="button" class="admin-panel__cancel" id="cancelEditBtn" hidden>İptal</button>
+        </div>
+
+        <form id="productForm" class="admin-form">
+          <input type="hidden" id="productId">
+
+          <label class="admin-field">
+            <span>Ürün Adı *</span>
+            <input type="text" id="fieldName" required placeholder="Örn. GRENFORCE">
+          </label>
+
+          <div class="admin-field-row">
+            <label class="admin-field">
+              <span>Marka</span>
+              <input type="text" id="fieldBrand" placeholder="Örn. KIMITEC" list="brandOptions">
+              <datalist id="brandOptions">
+                <option value="KIMITEC">
+                <option value="AGRO ATP">
+                <option value="ALTINTAR">
+              </datalist>
+            </label>
+            <label class="admin-field">
+              <span>Kategori <small class="admin-field__hint">— kısa tutun</small></span>
+              <input type="text" id="fieldCategory" placeholder="Örn. Meyve Kalitesi">
+            </label>
+          </div>
+
+          <label class="admin-field">
+            <span>Açıklama <small class="admin-field__hint">— her maddeyi ayrı satıra yazın, sitede ayrı ayrı listelenir</small></span>
+            <textarea id="fieldDescription" rows="6" placeholder="Örn:&#10;Bor ve çinko içeriği ile çiçek tozu canlılığını artırır.&#10;Meyve tutumunu destekler.&#10;Çiçeklenme öncesi ve döneminde uygulanabilir."></textarea>
+          </label>
+
+          <label class="admin-field">
+            <span>Ürün Görseli</span>
+            <input type="file" id="fieldImageFile" accept="image/*">
+          </label>
+          <div class="admin-image-preview" id="imagePreview" hidden>
+            <img id="imagePreviewImg" alt="Önizleme">
+            <span id="imagePreviewName"></span>
+          </div>
+          <label class="admin-field">
+            <span>veya Görsel URL</span>
+            <input type="url" id="fieldImgUrl" placeholder="https://...">
+          </label>
+
+          <p class="admin-error" id="formError" hidden></p>
+          <p class="admin-success" id="formSuccess" hidden></p>
+
+          <button type="submit" class="btn btn--primary" id="submitBtn">Ürünü Kaydet</button>
+        </form>
+      </section>
+
+      <section class="admin-panel admin-panel--list">
+        <div class="admin-panel__head">
+          <h2>Ürünler <span id="productCount" class="admin-count"></span></h2>
+          <button type="button" class="admin-panel__cancel" id="refreshBtn">Yenile</button>
+        </div>
+
+        <p id="listLoading" class="admin-hint">Yükleniyor...</p>
+        <p id="listEmpty" class="admin-hint" hidden>Henüz ürün eklenmemiş.</p>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table" id="productTable" hidden>
+            <thead>
+              <tr>
+                <th>Görsel</th>
+                <th>Ad</th>
+                <th>Marka</th>
+                <th>Kategori</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- BLOG SEKMESİ -->
+    <div class="admin-tab-panel" id="tabBlog" hidden>
+      <section class="admin-panel">
+        <div class="admin-panel__head">
+          <h2 id="blogFormTitle">Yeni Yazı Ekle</h2>
+          <button type="button" class="admin-panel__cancel" id="blogCancelEditBtn" hidden>İptal</button>
+        </div>
+
+        <form id="blogForm" class="admin-form">
+          <input type="hidden" id="blogId">
+
+          <label class="admin-field">
+            <span>Başlık *</span>
+            <input type="text" id="blogFieldTitle" required placeholder="Örn. Çiçeklenme Döneminde Bor Eksikliği">
+          </label>
+
+          <label class="admin-field">
+            <span>Kategori <small class="admin-field__hint">— kısa tutun</small></span>
+            <input type="text" id="blogFieldCategory" placeholder="Örn. Bitki Besleme">
+          </label>
+
+          <label class="admin-field">
+            <span>Kısa Özet <small class="admin-field__hint">— kartta görünen 1-2 cümlelik özet</small></span>
+            <textarea id="blogFieldExcerpt" rows="3" placeholder="Kartta görünecek kısa özet..."></textarea>
+          </label>
+
+          <label class="admin-field">
+            <span>Yazı İçeriği <small class="admin-field__hint">— her paragrafı ayrı satıra yazın</small></span>
+            <textarea id="blogFieldContent" rows="6" placeholder="Örn:&#10;İlk paragraf burada.&#10;İkinci paragraf burada."></textarea>
+          </label>
+
+          <label class="admin-field">
+            <span>Görsel</span>
+            <input type="file" id="blogFieldImageFile" accept="image/*">
+          </label>
+          <div class="admin-image-preview" id="blogImagePreview" hidden>
+            <img id="blogImagePreviewImg" alt="Önizleme">
+            <span id="blogImagePreviewName"></span>
+          </div>
+          <label class="admin-field">
+            <span>veya Görsel URL</span>
+            <input type="url" id="blogFieldImgUrl" placeholder="https://...">
+          </label>
+
+          <p class="admin-error" id="blogFormError" hidden></p>
+          <p class="admin-success" id="blogFormSuccess" hidden></p>
+
+          <button type="submit" class="btn btn--primary" id="blogSubmitBtn">Yazıyı Kaydet</button>
+        </form>
+      </section>
+
+      <section class="admin-panel admin-panel--list">
+        <div class="admin-panel__head">
+          <h2>Yazılar <span id="blogCount" class="admin-count"></span></h2>
+          <button type="button" class="admin-panel__cancel" id="blogRefreshBtn">Yenile</button>
+        </div>
+
+        <p id="blogListLoading" class="admin-hint">Yükleniyor...</p>
+        <p id="blogListEmpty" class="admin-hint" hidden>Henüz yazı eklenmemiş.</p>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table" id="blogTable" hidden>
+            <thead>
+              <tr>
+                <th>Görsel</th>
+                <th>Başlık</th>
+                <th>Kategori</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="blogTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
