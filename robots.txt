@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://SITENIN-ADRESI.com/sitemap.xml
+Sitemap: https://csrbiotarim.com.tr/sitemap.xml
