@@ -49,6 +49,7 @@
     <div class="admin-tabs" id="adminTabs">
       <button type="button" class="admin-tab is-active" data-tab="products">Ürünler</button>
       <button type="button" class="admin-tab" data-tab="blog">Blog Yazıları</button>
+      <button type="button" class="admin-tab" data-tab="site">Slider / Referans / Yorum</button>
     </div>
 
     <!-- ÜRÜNLER SEKMESİ -->
@@ -87,6 +88,39 @@
             <span>Açıklama <small class="admin-field__hint">— her maddeyi ayrı satıra yazın, sitede ayrı ayrı listelenir</small></span>
             <textarea id="fieldDescription" rows="6" placeholder="Örn:&#10;Bor ve çinko içeriği ile çiçek tozu canlılığını artırır.&#10;Meyve tutumunu destekler.&#10;Çiçeklenme öncesi ve döneminde uygulanabilir."></textarea>
           </label>
+
+          <div class="admin-field-row">
+            <label class="admin-field">
+              <span>Aktif Madde <small class="admin-field__hint">— opsiyonel</small></span>
+              <input type="text" id="fieldActive" placeholder="Örn. %10 Bor + %5 Çinko">
+            </label>
+            <label class="admin-field">
+              <span>Formulasyon Tipi <small class="admin-field__hint">— opsiyonel</small></span>
+              <input type="text" id="fieldFormulation" placeholder="Örn. SL (Sıvı)">
+            </label>
+          </div>
+          <div class="admin-field-row">
+            <label class="admin-field">
+              <span>Hedef Ürünler <small class="admin-field__hint">— opsiyonel</small></span>
+              <textarea id="fieldCrops" rows="2" placeholder="Örn. Elma, Kiraz, Domates"></textarea>
+            </label>
+            <label class="admin-field">
+              <span>Hedef Zararlılar / Sorunlar <small class="admin-field__hint">— opsiyonel</small></span>
+              <textarea id="fieldPests" rows="2" placeholder="Örn. Çiçek dökümü, Bor eksikliği"></textarea>
+            </label>
+          </div>
+          <p class="admin-hint" style="margin:-4px 0 12px">Bu dört alandan doldurduklarınız ürün sayfasında yeşil kutu olarak çıkar. Hepsi boşsa Marka ve Kategori gösterilir.</p>
+
+          <div class="admin-field-row">
+            <label class="admin-field">
+              <span>Teknik Döküman (PDF)</span>
+              <input type="file" id="fieldPdfFile" accept="application/pdf">
+            </label>
+            <label class="admin-field">
+              <span>veya PDF URL</span>
+              <input type="url" id="fieldPdfUrl" placeholder="https://...">
+            </label>
+          </div>
 
           <label class="admin-field">
             <span>Ürün Görseli</span>
@@ -205,6 +239,99 @@
               </tr>
             </thead>
             <tbody id="blogTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- SİTE İÇERİĞİ SEKMESİ -->
+    <div class="admin-tab-panel" id="tabSite" hidden>
+      <section class="admin-panel">
+        <div class="admin-panel__head">
+          <h2 id="siteFormTitle">Yeni İçerik Ekle</h2>
+          <button type="button" class="admin-panel__cancel" id="siteCancelBtn" hidden>İptal</button>
+        </div>
+
+        <form id="siteForm" class="admin-form">
+          <input type="hidden" id="siteId">
+
+          <label class="admin-field">
+            <span>Tür *</span>
+            <select id="siteKind">
+              <option value="slide">Slider görseli (ana sayfa üstü, önerilen 1920×560)</option>
+              <option value="reference">Referans logosu</option>
+              <option value="review">Müşteri yorumu</option>
+            </select>
+          </label>
+
+          <div data-for="review">
+            <div class="admin-field-row">
+              <label class="admin-field">
+                <span>Müşteri Adı *</span>
+                <input type="text" id="siteName" placeholder="Örn. Ahmet Yılmaz">
+              </label>
+              <label class="admin-field">
+                <span>Yıldız</span>
+                <select id="siteStars"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>
+              </label>
+            </div>
+            <label class="admin-field">
+              <span>Yorum *</span>
+              <textarea id="siteText" rows="3" placeholder="Müşterinin yorumu"></textarea>
+            </label>
+            <label class="admin-field">
+              <span>Tarih</span>
+              <input type="date" id="siteDate">
+            </label>
+          </div>
+
+          <div data-for="reference">
+            <label class="admin-field">
+              <span>Firma Adı</span>
+              <input type="text" id="siteRefName" placeholder="Örn. KIMITEC">
+            </label>
+          </div>
+
+          <div data-for="slide reference">
+            <label class="admin-field">
+              <span>Tıklanınca gidecek link <small class="admin-field__hint">— opsiyonel</small></span>
+              <input type="text" id="siteLink" placeholder="Örn. blog.html veya https://...">
+            </label>
+            <label class="admin-field">
+              <span>Görsel *</span>
+              <input type="file" id="siteImageFile" accept="image/*">
+            </label>
+            <div class="admin-image-preview" id="siteImagePreview" hidden>
+              <img id="siteImagePreviewImg" alt="Önizleme">
+            </div>
+            <label class="admin-field">
+              <span>veya Görsel URL</span>
+              <input type="url" id="siteImgUrl" placeholder="https://...">
+            </label>
+          </div>
+
+          <label class="admin-field">
+            <span>Sıra <small class="admin-field__hint">— küçük sayı önce gösterilir</small></span>
+            <input type="number" id="siteSort" value="0">
+          </label>
+
+          <p class="admin-error" id="siteError" hidden></p>
+          <p class="admin-success" id="siteSuccess" hidden></p>
+
+          <button type="submit" class="btn btn--primary" id="siteSubmitBtn">Kaydet</button>
+        </form>
+      </section>
+
+      <section class="admin-panel admin-panel--list">
+        <div class="admin-panel__head">
+          <h2>İçerikler <span id="siteCount" class="admin-count"></span></h2>
+          <button type="button" class="admin-panel__cancel" id="siteRefreshBtn">Yenile</button>
+        </div>
+        <p id="siteListMsg" class="admin-hint">Yükleniyor...</p>
+        <div class="admin-table-wrap">
+          <table class="admin-table" id="siteTable" hidden>
+            <thead><tr><th>Görsel</th><th>Tür</th><th>Ad / Yorum</th><th>Sıra</th><th></th></tr></thead>
+            <tbody id="siteTableBody"></tbody>
           </table>
         </div>
       </section>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Yazısı | CSR BİO Tarım</title>
+<meta name="description" content="CSR BİO Tarım blog yazısı.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body data-page="blog">
+
+<main>
+  <section class="page-head">
+    <nav class="crumbs" id="postCrumbs"><a href="index.html">Anasayfa</a><span>/</span><a href="blog.html">Blog</a></nav>
+  </section>
+  <article class="article" id="article"><div class="skeleton" style="height:360px"></div></article>
+  <section class="section" style="padding-top:0" id="morePosts">
+    <div class="container">
+      <h2 class="section-title" style="font-weight:400">Diğer Yazılar</h2>
+      <div class="blog-grid" id="moreGrid"></div>
+    </div>
+  </section>
+</main>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/common.js"></script>
+<script src="js/post.js"></script>
+</body>
+</html>

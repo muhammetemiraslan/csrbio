@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İletişim | CSR BİO Tarım</title>
+<meta name="description" content="CSR BİO Tarım ile iletişime geçin: telefon, WhatsApp ve e-posta.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body data-page="contact">
+
+<main>
+  <section class="page-hero">
+    <div><h1>İletişim</h1><p>Bize Ulaşın!</p></div>
+  </section>
+
+  <section class="contact"><div class="container">
+    <div class="contact__side">
+      <div class="contact__card" id="contactCard"></div>
+      <div class="contact__map" id="contactMap" hidden></div>
+    </div>
+
+    <form class="form" id="contactForm" novalidate>
+      <h2>Bize Yazın.</h2>
+      <label>İsim Soy İsim *
+        <input type="text" name="name" required placeholder="İsminizi ve soy isminizi yazınız.">
+      </label>
+      <div class="form__row">
+        <label>Telefon Numaranız *
+          <input type="tel" name="phone" required placeholder="0501 234 56 78">
+        </label>
+        <label>E-posta
+          <input type="email" name="email" placeholder="E-posta adresinizi yazınız.">
+        </label>
+      </div>
+      <label>Mesajınız * <span class="form__count" id="msgCount">0 / 500</span>
+        <textarea name="message" required maxlength="500"></textarea>
+      </label>
+      <button type="submit" class="form__btn">GÖNDER</button>
+      <p class="form__note">Mesajınız WhatsApp üzerinden bize iletilir.</p>
+    </form>
+  </div></section>
+</main>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/common.js"></script>
+<script src="js/contact.js"></script>
+</body>
+</html>

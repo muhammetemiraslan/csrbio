@@ -35,6 +35,12 @@ const fieldBrand = document.getElementById("fieldBrand");
 const fieldCategory = document.getElementById("fieldCategory");
 const fieldDescription = document.getElementById("fieldDescription");
 const fieldImageFile = document.getElementById("fieldImageFile");
+const fieldActive = document.getElementById("fieldActive");
+const fieldFormulation = document.getElementById("fieldFormulation");
+const fieldCrops = document.getElementById("fieldCrops");
+const fieldPests = document.getElementById("fieldPests");
+const fieldPdfFile = document.getElementById("fieldPdfFile");
+const fieldPdfUrl = document.getElementById("fieldPdfUrl");
 const fieldImgUrl = document.getElementById("fieldImgUrl");
 const imagePreview = document.getElementById("imagePreview");
 const imagePreviewImg = document.getElementById("imagePreviewImg");
@@ -59,6 +65,7 @@ function showDashboard(session){
   userEmail.textContent = session?.user?.email || "";
   loadProducts();
   loadBlogPosts();
+  loadSiteItems();
 }
 function showLogin(){
   loginView.hidden = false;
@@ -140,6 +147,12 @@ function fillFormForEdit(product){
   fieldDescription.value = product.description || "";
   fieldImgUrl.value = product.img_url || "";
   fieldImageFile.value = "";
+  fieldActive.value = product.active_ingredient || "";
+  fieldFormulation.value = product.formulation || "";
+  fieldCrops.value = product.target_crops || "";
+  fieldPests.value = product.target_pests || "";
+  fieldPdfUrl.value = product.pdf_url || "";
+  fieldPdfFile.value = "";
   if(product.img_url){
     imagePreviewImg.src = product.img_url;
     imagePreviewName.textContent = "Mevcut görsel";
@@ -175,12 +188,26 @@ productForm.addEventListener("submit", async (e) => {
       imgUrl = publicData.publicUrl;
     }
 
+    let pdfUrl = fieldPdfUrl.value.trim();
+    const pdfFile = fieldPdfFile.files[0];
+    if(pdfFile){
+      const pdfPath = `pdf/${Date.now()}_${pdfFile.name.replace(/\s+/g, "_")}`;
+      const { error: pdfError } = await sb.storage.from(BUCKET).upload(pdfPath, pdfFile, { contentType: "application/pdf" });
+      if(pdfError) throw pdfError;
+      pdfUrl = sb.storage.from(BUCKET).getPublicUrl(pdfPath).data.publicUrl;
+    }
+
     const payload = {
       name: fieldName.value.trim(),
       brand: fieldBrand.value.trim(),
       category: fieldCategory.value.trim(),
       description: fieldDescription.value.trim(),
-      img_url: imgUrl
+      img_url: imgUrl,
+      active_ingredient: fieldActive.value.trim(),
+      formulation: fieldFormulation.value.trim(),
+      target_crops: fieldCrops.value.trim(),
+      target_pests: fieldPests.value.trim(),
+      pdf_url: pdfUrl
     };
 
     let error;
@@ -196,7 +223,7 @@ productForm.addEventListener("submit", async (e) => {
     resetFormKeepMessage();
     loadProducts();
   } catch(err){
-    formError.textContent = "Hata: " + (err.message || "Bilinmeyen bir hata oluştu.");
+    formError.textContent = "Hata: " + friendlyError(err);
     formError.hidden = false;
   } finally {
     submitBtn.disabled = false;
@@ -281,6 +308,15 @@ async function handleDelete(id){
 
 refreshBtn.addEventListener("click", loadProducts);
 
+// Eksik sütun / tablo hatalarını anlaşılır göster
+function friendlyError(err){
+  const m = (err && err.message) || "Bilinmeyen bir hata oluştu.";
+  if(/column|schema cache|relation|does not exist|Could not find/i.test(m)){
+    return m + " — Supabase'de supabase-kurulum.sql dosyasını çalıştırdın mı?";
+  }
+  return m;
+}
+
 function escapeHtml(str){
   const div = document.createElement("div");
   div.textContent = str;
@@ -297,9 +333,9 @@ adminTabs.addEventListener("click", (e) => {
   if(!btn) return;
   adminTabs.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("is-active"));
   btn.classList.add("is-active");
-  const isProducts = btn.dataset.tab === "products";
-  tabProducts.hidden = !isProducts;
-  tabBlog.hidden = isProducts;
+  tabProducts.hidden = btn.dataset.tab !== "products";
+  tabBlog.hidden = btn.dataset.tab !== "blog";
+  document.getElementById("tabSite").hidden = btn.dataset.tab !== "site";
 });
 
 // ==========================================================
@@ -502,3 +538,173 @@ blogRefreshBtn.addEventListener("click", loadBlogPosts);
 
 // ---------------- Boot ----------------
 initAuth();
+
+// ==========================================================
+// SLIDER / REFERANS / YORUM  (tablo: site_item)
+// ==========================================================
+const SITE_KIND_LABEL = { slide: "Slider", reference: "Referans", review: "Yorum" };
+const siteForm = document.getElementById("siteForm");
+const siteEl = (id) => document.getElementById(id);
+let SITE_ITEMS = [];
+
+function siteToggleFields(){
+  const kind = siteEl("siteKind").value;
+  siteForm.querySelectorAll("[data-for]").forEach(box => {
+    box.hidden = !box.dataset.for.split(" ").includes(kind);
+  });
+}
+siteEl("siteKind").addEventListener("change", siteToggleFields);
+siteToggleFields();
+
+siteEl("siteImageFile").addEventListener("change", () => {
+  const f = siteEl("siteImageFile").files[0];
+  siteEl("siteImagePreview").hidden = !f;
+  if(f) siteEl("siteImagePreviewImg").src = URL.createObjectURL(f);
+});
+
+function siteReset(){
+  siteForm.reset();
+  siteEl("siteId").value = "";
+  siteEl("siteSort").value = "0";
+  siteEl("siteImagePreview").hidden = true;
+  siteEl("siteFormTitle").textContent = "Yeni İçerik Ekle";
+  siteEl("siteSubmitBtn").textContent = "Kaydet";
+  siteEl("siteCancelBtn").hidden = true;
+  siteEl("siteKind").disabled = false;
+  siteToggleFields();
+}
+siteEl("siteCancelBtn").addEventListener("click", () => {
+  siteReset();
+  siteEl("siteError").hidden = true;
+  siteEl("siteSuccess").hidden = true;
+});
+
+function siteFill(item){
+  siteReset();
+  siteEl("siteId").value = item.id;
+  siteEl("siteKind").value = item.kind;
+  siteEl("siteKind").disabled = true;
+  siteEl("siteName").value = item.kind === "review" ? (item.title || "") : "";
+  siteEl("siteRefName").value = item.kind === "reference" ? (item.title || "") : "";
+  siteEl("siteText").value = item.body || "";
+  siteEl("siteStars").value = String(item.stars || 5);
+  siteEl("siteDate").value = item.item_date || "";
+  siteEl("siteLink").value = item.link || "";
+  siteEl("siteImgUrl").value = item.img_url || "";
+  siteEl("siteSort").value = item.sort_order ?? 0;
+  if(item.img_url){
+    siteEl("siteImagePreviewImg").src = item.img_url;
+    siteEl("siteImagePreview").hidden = false;
+  }
+  siteEl("siteFormTitle").textContent = "İçeriği Düzenle";
+  siteEl("siteSubmitBtn").textContent = "Değişiklikleri Kaydet";
+  siteEl("siteCancelBtn").hidden = false;
+  siteToggleFields();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+siteForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = siteEl("siteError"), ok = siteEl("siteSuccess"), btn = siteEl("siteSubmitBtn");
+  err.hidden = true; ok.hidden = true;
+  const kind = siteEl("siteKind").value;
+  const id = siteEl("siteId").value;
+
+  try {
+    btn.disabled = true;
+    btn.textContent = "Kaydediliyor...";
+
+    let imgUrl = siteEl("siteImgUrl").value.trim();
+    const file = siteEl("siteImageFile").files[0];
+    if(kind !== "review" && file){
+      const path = `site/${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
+      const { error: upErr } = await sb.storage.from(BUCKET).upload(path, file);
+      if(upErr) throw upErr;
+      imgUrl = sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+    }
+
+    if(kind === "review" && (!siteEl("siteName").value.trim() || !siteEl("siteText").value.trim())){
+      throw new Error("Müşteri adı ve yorum zorunlu.");
+    }
+    if(kind !== "review" && !imgUrl){
+      throw new Error("Görsel seç ya da görsel URL'si yaz.");
+    }
+
+    const payload = {
+      kind,
+      title: kind === "review" ? siteEl("siteName").value.trim() : siteEl("siteRefName").value.trim(),
+      body: kind === "review" ? siteEl("siteText").value.trim() : "",
+      stars: kind === "review" ? Number(siteEl("siteStars").value) : null,
+      item_date: kind === "review" && siteEl("siteDate").value ? siteEl("siteDate").value : null,
+      link: kind === "review" ? "" : siteEl("siteLink").value.trim(),
+      img_url: kind === "review" ? "" : imgUrl,
+      sort_order: Number(siteEl("siteSort").value) || 0
+    };
+
+    const { error } = id
+      ? await sb.from("site_item").update(payload).eq("id", id)
+      : await sb.from("site_item").insert([payload]);
+    if(error) throw error;
+
+    ok.textContent = id ? "İçerik güncellendi." : "İçerik eklendi.";
+    ok.hidden = false;
+    const keepKind = kind;
+    siteReset();
+    siteEl("siteKind").value = keepKind;
+    siteToggleFields();
+    loadSiteItems();
+  } catch(ex){
+    err.textContent = "Hata: " + friendlyError(ex);
+    err.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = siteEl("siteId").value ? "Değişiklikleri Kaydet" : "Kaydet";
+  }
+});
+
+async function loadSiteItems(){
+  const msg = siteEl("siteListMsg"), table = siteEl("siteTable");
+  msg.textContent = "Yükleniyor..."; msg.hidden = false; table.hidden = true;
+
+  const { data, error } = await sb.from("site_item").select("*")
+    .order("kind").order("sort_order").order("created_at");
+  if(error){
+    msg.textContent = "İçerikler yüklenemedi: " + friendlyError(error);
+    return;
+  }
+  SITE_ITEMS = data;
+  siteEl("siteCount").textContent = data.length ? `(${data.length})` : "";
+  if(!data.length){ msg.textContent = "Henüz içerik eklenmemiş."; return; }
+
+  siteEl("siteTableBody").innerHTML = data.map(it => `
+    <tr>
+      <td>${it.img_url
+        ? `<img class="admin-table__thumb" src="${escapeHtml(it.img_url)}" alt="">`
+        : `<span class="admin-table__thumb--empty">${it.kind === "review" ? "★" : "🌿"}</span>`}</td>
+      <td>${SITE_KIND_LABEL[it.kind] || escapeHtml(it.kind)}</td>
+      <td class="admin-table__review">${escapeHtml(it.title || "")}${it.body ? `<br>${escapeHtml(it.body.slice(0, 80))}${it.body.length > 80 ? "…" : ""}` : ""}</td>
+      <td>${it.sort_order ?? 0}</td>
+      <td><div class="admin-table__actions">
+        <button type="button" data-site-edit="${it.id}">Düzenle</button>
+        <button type="button" data-site-delete="${it.id}" class="is-danger">Sil</button>
+      </div></td>
+    </tr>`).join("");
+  msg.hidden = true;
+  table.hidden = false;
+}
+
+siteEl("siteTableBody").addEventListener("click", async (e) => {
+  const edit = e.target.closest("[data-site-edit]");
+  const del = e.target.closest("[data-site-delete]");
+  if(edit){
+    const item = SITE_ITEMS.find(x => String(x.id) === edit.dataset.siteEdit);
+    if(item) siteFill(item);
+  }
+  if(del){
+    if(!confirm("Bu içeriği silmek istediğine emin misin?")) return;
+    const { error } = await sb.from("site_item").delete().eq("id", del.dataset.siteDelete);
+    if(error){ alert("Silinemedi: " + error.message); return; }
+    loadSiteItems();
+  }
+});
+siteEl("siteRefreshBtn").addEventListener("click", loadSiteItems);

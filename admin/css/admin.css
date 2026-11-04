@@ -57,6 +57,7 @@
   letter-spacing:0;
 }
 .admin-field input,
+.admin-field select,
 .admin-field textarea{
   width:100%;
   border:1px solid var(--paper-dim);
@@ -267,3 +268,5 @@
 }
 .admin-table__actions button:hover{ border-color:var(--leaf); color:var(--leaf); }
 .admin-table__actions .is-danger:hover{ border-color:#a83232; color:#a83232; }
+
+.admin-table__review{max-width:320px;font-size:.85rem;color:var(--ink-soft)}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ürün | CSR BİO Tarım</title>
+<meta name="description" content="CSR BİO Tarım ürün detayı.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body data-page="product">
+
+<main id="productPage">
+  <section class="pd"><div class="container">
+    <div class="pd__gallery" id="pdGallery"><div class="skeleton" style="width:70%;height:420px"></div></div>
+    <div>
+      <nav class="crumbs" id="pdCrumbs"><a href="index.html">Ana Sayfa</a></nav>
+      <h1 id="pdTitle"><span class="skeleton" style="display:inline-block;width:60%;height:40px"></span></h1>
+      <div class="pd__actions" id="pdActions"></div>
+      <div class="pd__box" id="pdBox"></div>
+      <div class="pd__meta" id="pdMeta"></div>
+    </div>
+  </div></section>
+
+  <div class="container">
+    <div class="tabs"><button type="button">Açıklama</button></div>
+    <div class="pd__desc" id="pdDesc"></div>
+    <section class="related" id="related">
+      <h2>İlgili Ürünler</h2>
+      <div class="grid" id="relatedGrid"></div>
+    </section>
+  </div>
+</main>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/common.js"></script>
+<script src="js/product.js"></script>
+</body>
+</html>
