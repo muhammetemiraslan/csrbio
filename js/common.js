@@ -95,7 +95,7 @@ function renderLayout(active){
     </form>
     <div class="header__icons">
       <a href="admin/" aria-label="Giriş">${ICON.user}</a>
-      <a href="${waLink("Merhaba, sipariş vermek istiyorum.")}" target="_blank" rel="noopener" class="cart" aria-label="Sepet — WhatsApp'tan sipariş">${ICON.bag}<span class="cart__count">0</span><b>0,00₺</b></a>
+      <a href="${waLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}" target="_blank" rel="noopener" class="header__wa" aria-label="WhatsApp ile yazın">${ICON.whatsapp}<b>WhatsApp</b></a>
       <button class="menu-toggle" id="menuToggle" aria-label="Menü">${ICON.menu}</button>
     </div>
   </div></header>
