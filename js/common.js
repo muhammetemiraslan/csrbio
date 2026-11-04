@@ -367,6 +367,7 @@ function initChat(){
   const box = $("#chat"), body = $("#chatBody"), form = $("#chatForm"), input = $("#chatInput");
   let history = [];
   let busy = false;
+  let rendering = null;
   try { history = JSON.parse(sessionStorage.getItem(CHAT_STORE) || "[]"); } catch(e){ history = []; }
   const save = () => { try { sessionStorage.setItem(CHAT_STORE, JSON.stringify(history.slice(-20))); } catch(e){} };
 
@@ -437,8 +438,9 @@ function initChat(){
     box.classList.remove("hidden");
     fab.classList.add("is-open");
     fab.setAttribute("aria-expanded", "true");
-    if(!body.children.length) renderAll();
+    if(!rendering) rendering = body.children.length ? Promise.resolve() : renderAll();
     setTimeout(() => input.focus(), 50);
+    return rendering;
   };
   const close = () => {
     box.classList.add("hidden");
@@ -448,8 +450,17 @@ function initChat(){
 
   fab.addEventListener("click", () => box.classList.contains("hidden") ? open() : close());
   $("#chatClose").addEventListener("click", close);
-  $("#chatReset").addEventListener("click", () => { history = []; save(); renderAll(); });
+  $("#chatReset").addEventListener("click", () => { history = []; save(); rendering = renderAll(); });
   document.addEventListener("keydown", (e) => { if(e.key === "Escape" && !box.classList.contains("hidden")) close(); });
   form.addEventListener("submit", (e) => { e.preventDefault(); send(input.value); });
   $("#chatSuggest").addEventListener("click", (e) => { const b = e.target.closest("button"); if(b) send(b.textContent); });
+
+  // Sayfadaki diğer yerlerden (ana sayfa asistan bölümü) kullanmak için
+  window.csrChat = {
+    open,
+    ask: async (text) => {
+      await open();
+      send(text);
+    }
+  };
 }

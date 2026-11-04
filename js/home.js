@@ -206,3 +206,17 @@ getPosts().then(posts => {
     ? posts.slice(0, 3).map(postCardHTML).join("")
     : `<div class="empty">Henüz yazı eklenmedi.</div>`;
 });
+
+// ---------------- Dijital asistan bölümü ----------------
+$("#assistBadge").innerHTML = LOGO_MARK;
+$("#assistForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const q = $("#assistInput").value.trim();
+  if(!q){ window.csrChat.open(); return; }
+  $("#assistInput").value = "";
+  window.csrChat.ask(q);
+});
+$("#assistChips").addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if(b) window.csrChat.ask(b.textContent);
+});

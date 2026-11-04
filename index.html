@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/main.css?v=20261104b">
 </head>
 
 <body data-page="home">
@@ -101,6 +101,31 @@
       </div>
     </section>
 
+    <!-- DİJİTAL ASİSTAN -->
+    <section class="assist" id="asistan" aria-label="CSR Asistan">
+      <div class="container">
+        <div class="assist__text">
+          <span class="assist__badge" id="assistBadge"></span>
+          <div>
+            <p class="assist__eyebrow">Dijital Asistan</p>
+            <h2>Bitkinizde bir sorun mu var?</h2>
+            <p>CSR Asistan'a yazın, size uygun ürünümüzü saniyeler içinde önersin.</p>
+          </div>
+        </div>
+        <div class="assist__ask">
+          <form class="assist__form" id="assistForm" autocomplete="off">
+            <input type="text" id="assistInput" maxlength="600" placeholder="Örn. Domateste yapraklar sararıyor" aria-label="Sorunuz">
+            <button type="submit">Sor</button>
+          </form>
+          <div class="assist__chips" id="assistChips">
+            <button type="button">Elmada çiçek dökümü</button>
+            <button type="button">Yapraklarda sararma</button>
+            <button type="button">Kök gelişimi</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- MÜŞTERİ YORUMLARI -->
     <section class="section reviews" id="yorumlar">
       <div class="container">
@@ -136,8 +161,8 @@
   </main>
 
   <script src="js/vendor/supabase.js"></script>
-  <script src="js/common.js"></script>
-  <script src="js/home.js"></script>
+  <script src="js/common.js?v=20261104b"></script>
+  <script src="js/home.js?v=20261104b"></script>
 </body>
 
 </html>

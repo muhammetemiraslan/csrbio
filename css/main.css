@@ -450,3 +450,41 @@ button.fab{border:0;background:none;cursor:pointer;font:inherit;padding:0}
 @media (max-width:600px){
   .chat{right:8px;left:8px;width:auto;bottom:84px;max-height:calc(100vh - 100px)}
 }
+
+/* Ana sayfa: Dijital Asistan şeridi */
+.assist{background:radial-gradient(circle at 85% 20%,#4c7a32,transparent 55%),linear-gradient(135deg,#2f5226,#1d3517);color:#fff;padding:46px 0;margin:20px 0 10px}
+.assist .container{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center}
+.assist__text{display:flex;gap:20px;align-items:center}
+.assist__badge{width:76px;height:76px;border-radius:50%;background:#fff;display:grid;place-items:center;flex-shrink:0;box-shadow:0 0 0 6px rgba(163,193,51,.35)}
+.assist__badge svg{width:60px;height:60px}
+.assist__eyebrow{font-size:12px;font-weight:600;color:var(--lime);text-transform:uppercase;letter-spacing:1px}
+.assist h2{font-size:28px;font-weight:600;line-height:1.25;margin:2px 0 6px}
+.assist__text p:last-child{color:#d7e4c4;font-size:15px}
+.assist__form{display:flex;background:#fff;border-radius:40px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.assist__form input{flex:1;border:0;outline:0;padding:0 18px;font-size:15px;min-width:0;background:none}
+.assist__form button{background:var(--lime);color:#1d2d16;border:0;border-radius:30px;padding:12px 30px;font-weight:700;font-size:15px;cursor:pointer;transition:background .2s}
+.assist__form button:hover{background:#b5d43f}
+.assist__chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.assist__chips button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:20px;padding:5px 14px;font-size:13px;cursor:pointer;transition:.2s}
+.assist__chips button:hover{background:var(--lime);border-color:var(--lime);color:#1d2d16}
+@media (max-width:992px){
+  .assist .container{grid-template-columns:1fr;gap:24px}
+}
+@media (max-width:600px){
+  .assist__badge{width:56px;height:56px}.assist__badge svg{width:44px;height:44px}
+  .assist h2{font-size:22px}
+  .assist__form button{padding:10px 20px}
+}
+.assist .container > *,.assist__text > div{min-width:0}
+
+/* Dijital Asistan: açık zemin, koyu yazı */
+.assist{background:linear-gradient(135deg,#f3f8e8,#e7f0d4);color:var(--ink);border-top:1px solid #dfe9c8;border-bottom:1px solid #dfe9c8}
+.assist__badge{background:var(--green);box-shadow:0 0 0 6px rgba(163,193,51,.3)}
+.assist__eyebrow{color:var(--lime-dark)}
+.assist h2{color:var(--green)}
+.assist__text p:last-child{color:#555}
+.assist__form{border:1px solid #d5e3b5;box-shadow:0 6px 20px rgba(47,82,38,.1)}
+.assist__form button{background:var(--green);color:#fff}
+.assist__form button:hover{background:var(--green-dark)}
+.assist__chips button{background:#fff;border-color:#cfe0a7;color:var(--green)}
+.assist__chips button:hover{background:var(--green);border-color:var(--green);color:#fff}
