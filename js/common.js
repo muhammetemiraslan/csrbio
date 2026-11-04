@@ -16,6 +16,7 @@ const SITE = {
 
 const SUPABASE_URL = "https://xrzonxgaoanhoijloyag.supabase.co";
 const SUPABASE_KEY = "sb_publishable_t_DLqABupEfr5goqtOW2JA_gwrFim-g";
+const CHAT_URL = `${SUPABASE_URL}/functions/v1/chat`;   // CSR Asistan (Supabase Edge Function)
 
 // ---------------- Yardımcılar ----------------
 const $ = (s, r = document) => r.querySelector(s);
@@ -150,10 +151,10 @@ function renderLayout(active){
   </div></div>
   <div class="footer__copy">${new Date().getFullYear()} © <b>${SITE.name}</b> | Tüm Hakları Saklıdır.</div>
 
-  <a class="fab" href="${waLink("Merhaba, bilgi almak istiyorum.")}" target="_blank" rel="noopener" aria-label="WhatsApp ile hızlı iletişim">
+  <button type="button" class="fab" id="chatFab" aria-label="CSR Asistan ile sohbet et" aria-expanded="false">
     <span class="fab__label">Hızlı İletişim</span>
     <span class="fab__btn">${LOGO_MARK}</span>
-  </a>`;
+  </button>`;
 
   document.body.insertAdjacentHTML("afterbegin", header);
   document.body.insertAdjacentHTML("beforeend", footer);
@@ -172,6 +173,7 @@ function renderLayout(active){
   }));
 
   initSearch();
+  initChat();
   getProducts().then(fillCategoryMenus);
 }
 
@@ -324,4 +326,130 @@ function postCardHTML(post){
       <a href="${postUrl(post)}" class="post__more">Okumaya Devam Et</a>
     </div>
   </article>`;
+}
+
+// ==========================================================
+// CSR Asistan — sağ alttaki sohbet penceresi
+// ==========================================================
+const CHAT_WELCOME = "Merhaba! Ben **CSR Asistan** 🌱\nBitkinizde yaşadığınız sorunu yazın (hangi bitki, hangi dönem, belirti ne), size uygun ürünlerimizi önereyim.";
+const CHAT_SUGGESTIONS = ["Elmada çiçek dökümü var", "Domateste yapraklar sararıyor", "Kök gelişimi için ne önerirsiniz?"];
+const CHAT_STORE = "csr_chat_v1";
+
+function chatFormat(text){
+  return esc(text)
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+    .replace(/^- (.+)$/gm, "• $1")
+    .replace(/\n/g, "<br>");
+}
+
+function initChat(){
+  const fab = $("#chatFab");
+  document.body.insertAdjacentHTML("beforeend", `
+  <section class="chat hidden" id="chat" role="dialog" aria-label="CSR Asistan">
+    <header class="chat__head">
+      <span class="chat__avatar">${LOGO_MARK}</span>
+      <div><b>CSR Asistan</b><small>Yapay zekâ destekli ürün asistanı</small></div>
+      <button type="button" class="chat__reset" id="chatReset" title="Yeni sohbet" aria-label="Yeni sohbet">↺</button>
+      <button type="button" class="chat__close" id="chatClose" aria-label="Kapat">✕</button>
+    </header>
+    <div class="chat__body" id="chatBody" aria-live="polite"></div>
+    <div class="chat__suggest" id="chatSuggest">${CHAT_SUGGESTIONS.map(t => `<button type="button">${esc(t)}</button>`).join("")}</div>
+    <form class="chat__form" id="chatForm" autocomplete="off">
+      <input type="text" id="chatInput" maxlength="600" placeholder="Sorunuzu yazın..." aria-label="Mesajınız">
+      <button type="submit" aria-label="Gönder">${ICON.arrowR}</button>
+    </form>
+    <div class="chat__foot">
+      <a href="${waLink("Merhaba, bilgi almak istiyorum.")}" target="_blank" rel="noopener">${ICON.whatsapp} Uzmanla WhatsApp'tan konuş</a>
+      <small>Asistan hata yapabilir; doz ve uygulama için ürün etiketine uyun. Kişisel bilgi paylaşmayın.</small>
+    </div>
+  </section>`);
+
+  const box = $("#chat"), body = $("#chatBody"), form = $("#chatForm"), input = $("#chatInput");
+  let history = [];
+  let busy = false;
+  try { history = JSON.parse(sessionStorage.getItem(CHAT_STORE) || "[]"); } catch(e){ history = []; }
+  const save = () => { try { sessionStorage.setItem(CHAT_STORE, JSON.stringify(history.slice(-20))); } catch(e){} };
+
+  async function productLinks(ids){
+    if(!ids || !ids.length) return "";
+    const all = await getProducts();
+    const list = ids.map(id => all.find(p => String(p.id) === String(id))).filter(Boolean);
+    return list.length ? `<div class="chat__products">${list.map(p => `
+      <a href="${productUrl(p)}">${p.image ? `<img src="${esc(p.image)}" alt="">` : ""}<span><b>${esc(p.name)}</b><small>${esc(p.category || p.brand)}</small></span></a>`).join("")}</div>` : "";
+  }
+
+  async function bubble(role, text, ids){
+    const div = document.createElement("div");
+    div.className = `chat__msg chat__msg--${role}`;
+    div.innerHTML = `<p>${chatFormat(text)}</p>`;
+    body.appendChild(div);
+    if(ids && ids.length) div.insertAdjacentHTML("beforeend", await productLinks(ids));
+    body.scrollTop = body.scrollHeight;
+  }
+
+  async function renderAll(){
+    body.innerHTML = "";
+    await bubble("bot", CHAT_WELCOME);
+    for(const m of history) await bubble(m.role === "user" ? "user" : "bot", m.text, m.ids);
+    $("#chatSuggest").classList.toggle("hidden", history.length > 0);
+  }
+
+  async function send(text){
+    text = text.trim();
+    if(!text || busy) return;
+    busy = true;
+    input.value = "";
+    $("#chatSuggest").classList.add("hidden");
+    history.push({ role: "user", text });
+    save();
+    await bubble("user", text);
+
+    const typing = document.createElement("div");
+    typing.className = "chat__msg chat__msg--bot chat__typing";
+    typing.innerHTML = "<p><i></i><i></i><i></i></p>";
+    body.appendChild(typing);
+    body.scrollTop = body.scrollHeight;
+
+    let reply, ids = [];
+    try{
+      const res = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+        body: JSON.stringify({ messages: history.map(m => ({ role: m.role, text: m.text })) })
+      });
+      const data = await res.json();
+      reply = data.reply;
+      ids = data.product_ids || [];
+      if(!reply) throw new Error(data.error || "boş cevap");
+    } catch(e){
+      reply = `Şu an bağlantı kuramadım. WhatsApp'tan yazarsanız hemen yardımcı olalım: ${SITE.phone}`;
+      ids = [];
+    }
+    typing.remove();
+    history.push({ role: "bot", text: reply, ids });
+    save();
+    await bubble("bot", reply, ids);
+    busy = false;
+    input.focus();
+  }
+
+  const open = () => {
+    box.classList.remove("hidden");
+    fab.classList.add("is-open");
+    fab.setAttribute("aria-expanded", "true");
+    if(!body.children.length) renderAll();
+    setTimeout(() => input.focus(), 50);
+  };
+  const close = () => {
+    box.classList.add("hidden");
+    fab.classList.remove("is-open");
+    fab.setAttribute("aria-expanded", "false");
+  };
+
+  fab.addEventListener("click", () => box.classList.contains("hidden") ? open() : close());
+  $("#chatClose").addEventListener("click", close);
+  $("#chatReset").addEventListener("click", () => { history = []; save(); renderAll(); });
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape" && !box.classList.contains("hidden")) close(); });
+  form.addEventListener("submit", (e) => { e.preventDefault(); send(input.value); });
+  $("#chatSuggest").addEventListener("click", (e) => { const b = e.target.closest("button"); if(b) send(b.textContent); });
 }

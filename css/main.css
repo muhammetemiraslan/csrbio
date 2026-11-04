@@ -401,3 +401,52 @@ a.refs__item:hover img{transform:scale(1.05)}
   .header__wa{padding:7px}
   .header__wa b{display:none}
 }
+
+/* ==========================================================
+   CSR Asistan (sohbet penceresi)
+   ========================================================== */
+button.fab{border:0;background:none;cursor:pointer;font:inherit;padding:0}
+.fab.is-open .fab__label{display:none}
+.chat{position:fixed;right:20px;bottom:90px;width:370px;max-height:min(600px,calc(100vh - 120px));background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.22);display:flex;flex-direction:column;overflow:hidden;z-index:70;animation:chatIn .2s ease}
+.chat.hidden{display:none}
+@keyframes chatIn{from{opacity:0;transform:translateY(10px)}}
+.chat__head{background:var(--green);color:#fff;display:flex;align-items:center;gap:10px;padding:12px 14px}
+.chat__avatar{width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;flex-shrink:0}
+.chat__avatar svg{width:30px;height:30px}
+.chat__head div{flex:1;line-height:1.25}
+.chat__head b{display:block;font-size:15px}
+.chat__head small{font-size:11px;color:#cfe0a7}
+.chat__head button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer;width:30px;height:30px;border-radius:50%}
+.chat__head button:hover{background:rgba(255,255,255,.15)}
+.chat__body{flex:1;overflow-y:auto;padding:14px;background:#f6f8f2;display:flex;flex-direction:column;gap:10px;min-height:220px}
+.chat__msg{max-width:88%}
+.chat__msg p{padding:9px 13px;border-radius:14px;font-size:14px;line-height:1.55;word-wrap:break-word}
+.chat__msg--bot p{background:#fff;border:1px solid #e5ebdc;border-bottom-left-radius:4px}
+.chat__msg--user{align-self:flex-end}
+.chat__msg--user p{background:var(--green);color:#fff;border-bottom-right-radius:4px}
+.chat__products{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.chat__products a{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--lime);border-radius:10px;padding:6px 10px;font-size:13px;transition:background .2s}
+.chat__products a:hover{background:#f1f6e4}
+.chat__products img{width:38px;height:38px;object-fit:contain;flex-shrink:0}
+.chat__products b{display:block;font-weight:600}
+.chat__products small{color:#888;font-size:11px}
+.chat__typing p{display:flex;gap:4px;padding:13px 14px}
+.chat__typing i{width:7px;height:7px;border-radius:50%;background:#9bb27a;animation:dot 1s infinite}
+.chat__typing i:nth-child(2){animation-delay:.15s}.chat__typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.chat__suggest{display:flex;flex-wrap:wrap;gap:6px;padding:8px 14px 0;background:#f6f8f2}
+.chat__suggest button{border:1px solid var(--lime);background:#fff;color:var(--green);border-radius:20px;padding:4px 11px;font-size:12px;cursor:pointer}
+.chat__suggest button:hover{background:var(--lime);color:#fff}
+.chat__form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #eee;background:#fff}
+.chat__form input{flex:1;border:1px solid #ddd;border-radius:22px;padding:9px 14px;font-size:14px;outline:0;min-width:0}
+.chat__form input:focus{border-color:var(--lime)}
+.chat__form button{width:40px;height:40px;border-radius:50%;border:0;background:var(--green);color:#fff;cursor:pointer;display:grid;place-items:center;flex-shrink:0}
+.chat__form button:hover{background:var(--green-dark)}
+.chat__form svg{width:18px;height:18px}
+.chat__foot{padding:0 12px 10px;background:#fff;text-align:center}
+.chat__foot a{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#1a9c4a}
+.chat__foot a svg{width:16px;height:16px}
+.chat__foot small{display:block;font-size:10.5px;color:#999;margin-top:3px;line-height:1.4}
+@media (max-width:600px){
+  .chat{right:8px;left:8px;width:auto;bottom:84px;max-height:calc(100vh - 100px)}
+}
