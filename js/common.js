@@ -234,8 +234,6 @@ function initSearch(){
 // ==========================================================
 // CSR Asistan — sağ alttaki sohbet penceresi
 // ==========================================================
-const CHAT_WELCOME = "Merhaba! Ben **CSR Asistan** 🌱\nBitkinizde yaşadığınız sorunu yazın (hangi bitki, hangi dönem, belirti ne), size uygun ürünlerimizi önereyim.";
-const CHAT_SUGGESTIONS = ["Elmada çiçek dökümü var", "Domateste yapraklar sararıyor", "Kök gelişimi için ne önerirsiniz?"];
 const CHAT_STORE = "csr_chat_v1";
 
 function chatFormat(text){
@@ -268,6 +266,7 @@ function initChat(){
   </section>`);
 
   const box = $("#chat"), body = $("#chatBody"), form = $("#chatForm"), input = $("#chatInput");
+  const suggestEl = $("#chatSuggest");   // sohbet temizlenince DOM'dan çıksa da kaybolmasın
   let history = [];
   let busy = false;
   let rendering = null;
@@ -294,8 +293,9 @@ function initChat(){
   async function renderAll(){
     body.innerHTML = "";
     await bubble("bot", CHAT_WELCOME);
+    body.appendChild(suggestEl);          // konu butonları açılış mesajının hemen altında
     for(const m of history) await bubble(m.role === "user" ? "user" : "bot", m.text, m.ids);
-    $("#chatSuggest").classList.toggle("hidden", history.length > 0);
+    suggestEl.classList.toggle("hidden", history.length > 0);
   }
 
   async function send(text){
@@ -303,7 +303,7 @@ function initChat(){
     if(!text || busy) return;
     busy = true;
     input.value = "";
-    $("#chatSuggest").classList.add("hidden");
+    suggestEl.classList.add("hidden");
     history.push({ role: "user", text });
     save();
     await bubble("user", text);
@@ -358,7 +358,7 @@ function initChat(){
   $("#chatReset").addEventListener("click", () => { history = []; save(); rendering = renderAll(); });
   document.addEventListener("keydown", (e) => { if(e.key === "Escape" && !box.classList.contains("hidden")) close(); });
   form.addEventListener("submit", (e) => { e.preventDefault(); send(input.value); });
-  $("#chatSuggest").addEventListener("click", (e) => { const b = e.target.closest("button"); if(b) send(b.textContent); });
+  suggestEl.addEventListener("click", (e) => { const b = e.target.closest("button"); if(b) send(b.textContent); });
 
   // Sayfadaki diğer yerlerden (ana sayfa asistan bölümü) kullanmak için
   window.csrChat = {

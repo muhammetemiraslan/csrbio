@@ -25,6 +25,19 @@ var CATEGORIES = ["Azot", "Fosfor", "Potasyum", "Kalsiyum", "Çinko", "Bor", "Ma
 // Ürün kartındaki ve detaydaki WhatsApp hazır mesajı ({urun} yerine ürün adı gelir)
 var WA_PRODUCT_MSG = "Merhaba, {urun} ürününüzün fiyatı ve ürün bilgisi hakkında bilgi almak istiyorum.";
 
+// CSR Asistan (sağ alttaki sohbet) — açılış metni ve hazır konu butonları
+// **kalın** yazmak için iki yıldız kullan, alt satır için \n
+var CHAT_WELCOME = "Merhaba! Ben **CSR Asistan** 🌱\nBitkinizde yaşadığınız sorunu işaretleyin, size uygun ürünlerimizi önereyim.";
+var CHAT_SUGGESTIONS = [
+  "Kök Gelişimi",
+  "Sürgün ve Dal Gelişimi",
+  "Çiçeklenme ve Döllenme",
+  "Ürün İriliği ve Gelişimi",
+  "Yapraklarda Sararma ve Kloroz",
+  "Stres ve Olumsuz Hava Koşullarına Dayanıklılık",
+  "Çatlama ve Şekil Bozuklukları"
+];
+
 var SUPABASE_URL = "https://xrzonxgaoanhoijloyag.supabase.co";
 var SUPABASE_KEY = "sb_publishable_t_DLqABupEfr5goqtOW2JA_gwrFim-g";
 var CHAT_URL = SUPABASE_URL + "/functions/v1/chat";   // CSR Asistan (Supabase Edge Function)

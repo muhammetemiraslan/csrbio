@@ -289,6 +289,8 @@ getPosts().then(posts => {
 
 // ---------------- Dijital asistan bölümü ----------------
 $("#assistBadge").innerHTML = LOGO_MARK;
+// Hazır konular sohbet penceresiyle aynı (js/config.js > CHAT_SUGGESTIONS)
+$("#assistChips").innerHTML = CHAT_SUGGESTIONS.map(t => `<button type="button">${esc(t)}</button>`).join("");
 $("#assistForm").addEventListener("submit", (e) => {
   e.preventDefault();
   const q = $("#assistInput").value.trim();

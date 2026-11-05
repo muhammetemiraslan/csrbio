@@ -632,3 +632,6 @@ button.fab{border:0;background:none;cursor:pointer;font:inherit;padding:0}
   .about__logo .logo__mark{width:60px;height:60px}
   .about__logo .logo__tagline{font-size:13px}
 }
+/* Sohbet: konu butonları açılış mesajının altında */
+.chat__body .chat__suggest{padding:0 0 4px;background:none;gap:7px}
+.chat__body .chat__suggest button{font-size:12.5px;padding:6px 12px}
