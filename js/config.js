@@ -13,7 +13,7 @@ var SITE = {
   contactPerson: "Volkan Baki Cesur",
   contactRole: "Yetkili",
   partner: "Selim Tarım",              // "... iştirakidir" ibaresi
-  address: "",                         // Selim Tarım açık adresi (footer + iletişim)
+  address: "Selim Tarım Market, Taşevi Köyü Yolu, 32402 Taşevi/Yalvaç/Isparta",   // footer + iletişim sayfası
   map: "38.275738612414074,30.823646545411194"   // harita konumu (koordinat ya da adres)
 };
 
