@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volkan Baki Cesur – Ziraat Mühendisi | CSR BİO Tarım</title>
+<meta name="description" content="CSR BİO Tarım yetkilisi Ziraat Mühendisi Volkan Baki Cesur: bitki besleme, bitki hastalıkları ve zararlıları ile tohum alanlarında saha deneyimi.">
+<link rel="canonical" href="https://csrbiotarim.com.tr/yetkili.html">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Volkan Baki Cesur – Ziraat Mühendisi">
+<meta property="og:image" content="https://csrbiotarim.com.tr/img/volkan-baki-cesur.jpg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css?v=20261105e">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Volkan Baki Cesur","jobTitle":"Ziraat Mühendisi","alumniOf":{"@type":"CollegeOrUniversity","name":"Süleyman Demirel Üniversitesi"},"image":"https://csrbiotarim.com.tr/img/volkan-baki-cesur.jpg","worksFor":{"@type":"Organization","name":"CSR BİO Tarım","url":"https://csrbiotarim.com.tr"}}</script>
+</head>
+<body data-page="yetkili">
+
+<main>
+  <section class="page-head">
+    <h1>Yetkilimiz</h1>
+    <nav class="crumbs"><a href="index.html">Anasayfa</a><span>/</span><b>Yetkilimiz</b></nav>
+  </section>
+
+  <section class="profile"><div class="container">
+    <div class="profile__photo">
+      <img src="img/volkan-baki-cesur.jpg" alt="Ziraat Mühendisi Volkan Baki Cesur" width="792" height="800">
+    </div>
+
+    <div class="profile__info">
+      <p class="profile__eyebrow">CSR BİO Tarım Yetkilisi</p>
+      <h2>Volkan Baki Cesur</h2>
+      <dl class="profile__facts">
+        <div><dt>Ünvan</dt><dd>Ziraat Mühendisi</dd></div>
+        <div><dt>Mezuniyet</dt><dd>Süleyman Demirel Üniversitesi</dd></div>
+      </dl>
+      <p class="profile__bio">2023 yılında başladığım tarım sektörü yolculuğumda; bitki besleme, bitki hastalıkları ve zararlıları ile tohum alanlarında bilgi ve saha deneyimimi geliştirmeye odaklandım. Tarımsal üretim süreçlerini bütüncül bir yaklaşımla değerlendirerek bitki gelişimi, doğru besleme uygulamaları ve verimliliğin artırılmasına yönelik çözümler üzerinde çalışıyorum. Akademik altyapımı saha deneyimiyle birleştirerek üreticilerin ihtiyaçlarını doğru analiz etmeyi ve sürdürülebilir tarımsal üretime katkı sağlamayı hedefliyorum. Bitkilerinizin ihtiyaçlarını doğru değerlendirmek ve üretim sürecinize uygun çözümler sunabilmek için çalışmalarımı sürdürmeye devam edeceğim.</p>
+      <div class="profile__actions" id="profileActions"></div>
+    </div>
+  </div></section>
+</main>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/config.js?v=20261105e"></script>
+<script src="js/render.js?v=20261105e"></script>
+<script src="js/common.js?v=20261105e"></script>
+<script>
+  renderLayout("yetkili");
+  document.getElementById("profileActions").innerHTML = `
+    <a class="btn btn--wa" href="${waLink("Merhaba Volkan Bey, bilgi almak istiyorum.")}" target="_blank" rel="noopener">${ICON.whatsapp} WhatsApp'tan Yazın</a>
+    <a class="btn btn--green" href="${SITE.phoneHref}">${ICON.phone} ${esc(SITE.phone)}</a>
+    <a class="btn btn--outline" href="mailto:${SITE.email}">${ICON.mail} E-posta Gönderin</a>`;
+</script>
+</body>
+</html>

@@ -43,17 +43,7 @@ function renderLayout(active){
       <div class="search__results hidden" id="searchResults"></div>
     </form>
     <div class="header__icons">
-      <div class="userbox">
-        <button type="button" class="userbox__btn" id="userBtn" aria-label="Yetkili iletişim bilgileri" aria-expanded="false">${ICON.user}</button>
-        <div class="userbox__pop hidden" id="userPop" role="dialog" aria-label="Yetkili bilgileri">
-          <span class="userbox__avatar">${ICON.user}</span>
-          <small>${esc(SITE.contactRole || "Yetkili")}</small>
-          <b>${esc(SITE.contactPerson)}</b>
-          <a href="${SITE.phoneHref}">${ICON.phone}${esc(SITE.phone)}</a>
-          <a href="${mailLink}">${ICON.mail}${esc(SITE.email)}</a>
-          <a class="userbox__wa" href="${waLink(`Merhaba ${SITE.contactPerson.split(" ")[0]} Bey, bilgi almak istiyorum.`)}" target="_blank" rel="noopener">${ICON.whatsapp} WhatsApp'tan Yaz</a>
-        </div>
-      </div>
+      <a href="yetkili.html" class="userbox__btn${active === "yetkili" ? " active" : ""}" aria-label="Yetkilimiz: ${esc(SITE.contactPerson)}" title="Yetkilimiz">${ICON.user}</a>
       <a href="${waLink("Merhaba, ürünleriniz hakkında bilgi almak istiyorum.")}" target="_blank" rel="noopener" class="header__wa" aria-label="WhatsApp ile yazın">${ICON.whatsapp}<b>WhatsApp</b></a>
       <button class="menu-toggle" id="menuToggle" aria-label="Menü">${ICON.menu}</button>
     </div>
@@ -80,6 +70,7 @@ function renderLayout(active){
         <li><a href="index.html#hakkimizda">Hakkımızda</a></li>
         <li><a href="index.html#urunler">Ürünlerimiz</a></li>
         <li><a href="blog.html">Blog</a></li>
+        <li><a href="yetkili.html">Yetkilimiz</a></li>
         <li><a href="index.html#yorumlar">Müşteri Yorumları</a></li>
       </ul>
     </div>
@@ -121,17 +112,6 @@ function renderLayout(active){
   $$("#nav a").forEach(a => a.addEventListener("click", () => {
     if(!a.parentElement.querySelector(".dropdown")) $("#nav").classList.remove("open");
   }));
-
-  // Kişi ikonu: yetkili bilgileri
-  const userBtn = $("#userBtn"), userPop = $("#userPop");
-  userBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const open = userPop.classList.toggle("hidden") === false;
-    userBtn.setAttribute("aria-expanded", String(open));
-  });
-  document.addEventListener("click", (e) => {
-    if(!userPop.contains(e.target)){ userPop.classList.add("hidden"); userBtn.setAttribute("aria-expanded", "false"); }
-  });
 
   initSearch();
   initChat();

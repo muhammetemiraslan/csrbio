@@ -635,3 +635,34 @@ button.fab{border:0;background:none;cursor:pointer;font:inherit;padding:0}
 /* Sohbet: konu butonları açılış mesajının altında */
 .chat__body .chat__suggest{padding:0 0 4px;background:none;gap:7px}
 .chat__body .chat__suggest button{font-size:12.5px;padding:6px 12px}
+
+/* ==========================================================
+   Yetkilimiz sayfası
+   ========================================================== */
+.userbox__btn{display:flex;padding:6px;border-radius:50%;color:var(--ink)}
+.userbox__btn:hover,.userbox__btn.active{background:#eef4e1;color:var(--green)}
+.userbox__btn svg{width:24px;height:24px}
+.profile{padding:60px 0 90px}
+.profile .container{display:grid;grid-template-columns:380px 1fr;gap:60px;align-items:start}
+.profile__photo{border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(29,53,23,.18);border:6px solid #fff;outline:1px solid #dfe9c8;background:#f3f8e8}
+.profile__photo img{width:100%;height:auto;display:block}
+.profile__eyebrow{font-size:12px;font-weight:600;color:var(--lime-dark);text-transform:uppercase;letter-spacing:1px}
+.profile h2{font-size:40px;font-weight:600;color:var(--green);line-height:1.2;margin:6px 0 22px}
+.profile__facts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:26px}
+.profile__facts div{background:#f3f8e8;border:1px solid #dfe9c8;border-radius:12px;padding:14px 18px}
+.profile__facts dt{font-size:11px;font-weight:600;color:var(--lime-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.profile__facts dd{font-size:16px;font-weight:600;color:var(--ink)}
+.profile__bio{font-size:16px;line-height:1.85;color:#444;margin-bottom:28px}
+.profile__actions{display:flex;flex-wrap:wrap;gap:12px}
+.profile__actions .btn{text-transform:none;font-size:14px;padding:11px 20px;border-radius:30px}
+@media (max-width:992px){
+  .profile .container{grid-template-columns:1fr;gap:34px}
+  .profile__photo{max-width:360px;margin:0 auto}
+}
+@media (max-width:600px){
+  .profile{padding:36px 0 60px}
+  .profile h2{font-size:30px;text-align:center}
+  .profile__eyebrow{text-align:center}
+  .profile__facts{grid-template-columns:1fr}
+  .profile__actions .btn{flex:1 1 100%}
+}

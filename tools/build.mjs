@@ -197,6 +197,7 @@ const urls = [
   [`${SITE.url}/`, today, "1.0"],
   [`${SITE.url}/blog.html`, today, "0.6"],
   [`${SITE.url}/iletisim.html`, today, "0.5"],
+  [`${SITE.url}/yetkili.html`, today, "0.5"],
   ...products.map((p) => [`${SITE.url}/${productUrl(p)}`, day(p.createdAt), "0.8"]),
   ...posts.map((p) => [`${SITE.url}/${postUrl(p)}`, day(p.createdAt), "0.6"]),
 ];
