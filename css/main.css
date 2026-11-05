@@ -590,3 +590,45 @@ button.fab{border:0;background:none;cursor:pointer;font:inherit;padding:0}
 }
 /* SEO için önceden yazılan listede ilk 10 ürün görünür (JS gelince filtreli liste çizilir) */
 .grid[data-prerendered] > .card:nth-child(n+11){display:none}
+
+/* ==========================================================
+   Eski CSR BIO logosu (yaprak + CSR BIO | Tarım Çözümleri)
+   ========================================================== */
+.logo{gap:10px}
+.logo__mark{color:#5b8c3e;width:40px;height:40px;flex-shrink:0}
+.logo__name{font-family:"Fraunces",Georgia,serif;font-size:30px;font-weight:600;letter-spacing:.02em;color:#16321f;line-height:1;white-space:nowrap}
+.logo__name strong{color:#5b8c3e;font-weight:700}
+.logo__tagline{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;letter-spacing:.06em;color:#4a5850;padding-left:12px;margin-left:2px;border-left:1px solid #dfe3d6;white-space:nowrap;line-height:1.3}
+/* büyük logolar */
+.about__logo{gap:18px;flex-wrap:wrap}
+.about__logo .logo__mark,.reviews__logo .logo__mark{width:110px;height:110px}
+.about__logo .logo__name,.reviews__logo .logo__name{font-size:64px}
+.about__logo .logo__tagline,.reviews__logo .logo__tagline{font-size:16px;padding-left:16px}
+.reviews__logo{gap:14px;align-items:center}
+.reviews__logo .logo__mark{width:90px;height:90px}
+.reviews__logo .logo__name{font-size:52px}
+/* footer kutusu */
+.footer__logo{padding:22px 24px;align-items:center}
+.footer__logo .logo__name{font-size:26px}
+/* logo işaretini kullanan küçük yuvarlaklar */
+.fab__btn svg{width:30px;height:30px}
+.chat__avatar svg{width:26px;height:26px}
+.spec .spec__icon svg{width:26px;height:26px}
+.assist__badge{background:#fff}
+.assist__badge svg{width:46px;height:46px}
+@media (max-width:1200px){
+  .header .logo__tagline{display:none}
+}
+@media (max-width:992px){
+  .header .logo__tagline{display:inline}
+  .about__logo .logo__name{font-size:46px}
+  .about__logo .logo__mark{width:80px;height:80px}
+}
+@media (max-width:600px){
+  .header .logo__tagline,.footer__logo .logo__tagline{display:none}
+  .logo__mark{width:34px;height:34px}
+  .logo__name{font-size:24px}
+  .about__logo .logo__name{font-size:38px}
+  .about__logo .logo__mark{width:60px;height:60px}
+  .about__logo .logo__tagline{font-size:13px}
+}

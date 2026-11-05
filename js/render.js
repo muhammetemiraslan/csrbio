@@ -171,15 +171,14 @@ const ICON = {
   star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>'
 };
 
-const LOGO_MARK = `<svg class="logo__mark" viewBox="0 0 64 64" aria-hidden="true">
-  <circle cx="32" cy="32" r="30" fill="#2f5226"/>
-  <path d="M10 44c10-4 30-4 44 0" stroke="#a3c133" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <path d="M13 51c9-3 27-3 38 0" stroke="#a3c133" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
-  <path d="M32 40V22" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
-  <path d="M32 28c-1-7-6-11-14-11 0 8 5 12 14 11z" fill="#a3c133"/>
-  <path d="M32 24c1-7 6-11 14-11 0 8-5 12-14 11z" fill="#fff"/>
+// Logo: eski CSR BIO sitesindeki yaprak işareti + "CSR BIO | Tarım Çözümleri"
+const LOGO_MARK = `<svg class="logo__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+  <path d="M20 4C20 4 8 12 8 23C8 30.2 13.4 36 20 36C26.6 36 32 30.2 32 23C32 12 20 4 20 4Z" stroke="currentColor" stroke-width="2"/>
+  <path d="M20 12V32" stroke="currentColor" stroke-width="2"/>
+  <path d="M20 18C20 18 14 19 14 24" stroke="currentColor" stroke-width="2"/>
+  <path d="M20 24C20 24 26 25 26 29" stroke="currentColor" stroke-width="2"/>
 </svg>`;
-const LOGO_HTML = `${LOGO_MARK}<span class="logo__text"><b>CSR BİO</b><span>Tarım</span></span>`;
+const LOGO_HTML = `${LOGO_MARK}<span class="logo__name">CSR <strong>BIO</strong></span><span class="logo__tagline">Tarım Çözümleri</span>`;
 
 // ---------------- Ürün kartı ----------------
 function productCardHTML(p){
