@@ -171,14 +171,14 @@ const ICON = {
   star: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>'
 };
 
-// Logo: eski CSR BIO sitesindeki yaprak işareti + "CSR BIO | Tarım Çözümleri"
+// Logo: eski CSR BIO sitesindeki yaprak işareti + "CSR BIO"
 const LOGO_MARK = `<svg class="logo__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
   <path d="M20 4C20 4 8 12 8 23C8 30.2 13.4 36 20 36C26.6 36 32 30.2 32 23C32 12 20 4 20 4Z" stroke="currentColor" stroke-width="2"/>
   <path d="M20 12V32" stroke="currentColor" stroke-width="2"/>
   <path d="M20 18C20 18 14 19 14 24" stroke="currentColor" stroke-width="2"/>
   <path d="M20 24C20 24 26 25 26 29" stroke="currentColor" stroke-width="2"/>
 </svg>`;
-const LOGO_HTML = `${LOGO_MARK}<span class="logo__name">CSR <strong>BIO</strong></span><span class="logo__tagline">Tarım Çözümleri</span>`;
+const LOGO_HTML = `${LOGO_MARK}<span class="logo__name">CSR <strong>BIO</strong></span>`;
 
 // ---------------- Ürün kartı ----------------
 function productCardHTML(p){
