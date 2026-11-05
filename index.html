@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=20261104d">
+  <link rel="stylesheet" href="css/main.css?v=20261105c">
 </head>
 
 <body data-page="home">
@@ -91,9 +91,9 @@
               <div class="shop__chips" id="chips"></div>
               <span id="resultCount"></span>
             </div>
-            <div class="grid" id="productGrid">
+            <div class="grid" id="productGrid"><!--URUN-LISTESI-->
               <div class="empty">Ürünler yükleniyor...</div>
-            </div>
+            <!--/URUN-LISTESI--></div>
             <div class="more"><button type="button" class="btn btn--outline hidden" id="loadMore">Daha Fazla Ürün
                 Yükle</button></div>
           </div>
@@ -159,10 +159,11 @@
       </div>
     </section>
   </main>
-
-  <script src="js/vendor/supabase.js"></script>
-  <script src="js/common.js?v=20261104d"></script>
-  <script src="js/home.js?v=20261104d"></script>
+<script src="js/vendor/supabase.js"></script>
+<script src="js/config.js?v=20261105c"></script>
+<script src="js/render.js?v=20261105c"></script>
+<script src="js/common.js?v=20261105c"></script>
+<script src="js/home.js?v=20261105c"></script>
 </body>
 
 </html>

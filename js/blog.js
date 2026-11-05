@@ -2,7 +2,9 @@
 renderLayout("blog");
 
 getPosts().then(posts => {
-  $("#blogGrid").innerHTML = posts.length
+  const grid = $("#blogGrid");
+  if(!posts.length && grid.dataset.prerendered) return;
+  grid.innerHTML = posts.length
     ? posts.map(postCardHTML).join("")
     : `<div class="empty">Henüz yazı eklenmedi, çok yakında burada olacak.</div>`;
 });

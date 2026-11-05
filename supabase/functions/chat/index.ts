@@ -4,13 +4,22 @@
 // cevapta sadece Supabase'deki ürünleri önerir.
 //
 // Gerekli secret: GEMINI_API_KEY
-// İsteğe bağlı:   GEMINI_MODEL (varsayılan: gemini-flash-latest)
+// İsteğe bağlı:   GEMINI_MODEL (önce bu denenir; yoğunsa yedek Flash modellerine geçer)
 // ==========================================================
 
 const GEMINI_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
-const MODEL = Deno.env.get("GEMINI_MODEL") ?? "gemini-flash-latest";
+// Sırayla denenecek modeller: biri yoğunsa / yoksa sıradakine geçer.
+// GEMINI_MODEL secret'ı verilirse en başa o eklenir.
+const MODELS = [...new Set([
+  Deno.env.get("GEMINI_MODEL"),
+  "gemini-2.5-flash",
+  "gemini-flash-latest",
+  "gemini-flash-lite-latest",
+  "gemini-2.5-flash-lite",
+].filter(Boolean) as string[])];
 const SB_URL = Deno.env.get("SUPABASE_URL") ?? "";
-const SB_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+// Ürünleri okumak için denenecek anahtarlar (biri çalışmazsa diğeri)
+const SB_KEYS = [Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"), Deno.env.get("SUPABASE_ANON_KEY")].filter(Boolean) as string[];
 
 const WHATSAPP = "0 535 625 87 00";
 const MAX_MSG_LEN = 600;      // tek mesaj en fazla kaç karakter
@@ -38,6 +47,15 @@ function limited(ip: string) {
   return list.length > RATE_LIMIT;
 }
 
+// Açıklama Word'den HTML olarak gelebilir: etiketleri temizle
+function stripTags(html: string) {
+  return html
+    .replace(/<(br|\/p|\/li|\/h[1-6]|\/tr)\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/[ \t]+/g, " ").replace(/\s*\n\s*/g, " / ").trim();
+}
+
 // ---------------- Ürün listesi (5 dk önbellek) ----------------
 type Product = {
   id: string; name: string; brand: string; category: string; description: string;
@@ -47,11 +65,19 @@ let cache: { at: number; list: Product[] } = { at: 0, list: [] };
 
 async function getProducts(): Promise<Product[]> {
   if (Date.now() - cache.at < 5 * 60e3 && cache.list.length) return cache.list;
-  const res = await fetch(`${SB_URL}/rest/v1/product?select=*`, {
-    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
-  });
-  if (!res.ok) throw new Error("product fetch " + res.status);
-  const rows = await res.json();
+  let rows: Record<string, unknown>[] | null = null;
+  for (const key of SB_KEYS) {
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/product?select=*`, {
+        headers: { apikey: key, Authorization: `Bearer ${key}` },
+      });
+      if (res.ok) { rows = await res.json(); break; }
+      console.error("product fetch", res.status, (await res.text()).slice(0, 200));
+    } catch (e) {
+      console.error("product fetch error", e);
+    }
+  }
+  if (!rows) return cache.list; // ürünler okunamazsa bot yine de cevap versin
   cache = {
     at: Date.now(),
     list: rows.map((r: Record<string, unknown>) => ({
@@ -59,7 +85,7 @@ async function getProducts(): Promise<Product[]> {
       name: String(r.name ?? ""),
       brand: String(r.brand ?? ""),
       category: String(r.category ?? ""),
-      description: String(r.description ?? "").slice(0, 500),
+      description: stripTags(String(r.description ?? "")).slice(0, 700),
       active_ingredient: String(r.active_ingredient ?? ""),
       formulation: String(r.formulation ?? ""),
       target_crops: String(r.target_crops ?? ""),
@@ -74,7 +100,7 @@ function catalogText(list: Product[]) {
     const parts = [`[id:${p.id}] ${p.name}`];
     if (p.brand) parts.push(`Marka: ${p.brand}`);
     if (p.category) parts.push(`Kategori: ${p.category}`);
-    if (p.active_ingredient) parts.push(`İçerik/Aktif madde: ${p.active_ingredient}`);
+    if (p.active_ingredient) parts.push(`İçerik (ana başlık): ${p.active_ingredient}`);
     if (p.formulation) parts.push(`Formülasyon: ${p.formulation}`);
     if (p.target_crops) parts.push(`Hedef ürünler: ${p.target_crops}`);
     if (p.target_pests) parts.push(`Hedef sorunlar: ${p.target_pests}`);
@@ -111,37 +137,79 @@ ${list.length ? catalogText(list) : "(Şu an listede ürün yok — WhatsApp'a y
 }
 
 // ---------------- Gemini çağrısı ----------------
-async function askGemini(system: string, history: { role: string; text: string }[]) {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents: history.map((m) => ({ role: m.role === "user" ? "user" : "model", parts: [{ text: m.text }] })),
-      generationConfig: {
-        temperature: 0.4,
-        maxOutputTokens: 4096,
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "OBJECT",
-          properties: {
-            reply: { type: "STRING" },
-            product_ids: { type: "ARRAY", items: { type: "STRING" } },
-          },
-          required: ["reply"],
-        },
-      },
-    }),
-  });
-  if (res.status === 429) return { busy: true };
-  if (!res.ok) throw new Error(`gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const data = await res.json();
-  const text = (data?.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+const MODEL_TIMEOUT = 15000;  // bir model 15 sn'de cevap vermezse sıradakine geç
+const TOTAL_TIMEOUT = 35000;  // toplamda en fazla 35 sn uğraş
+
+async function callModel(model: string, payload: string, ms: number) {
   try {
-    return JSON.parse(text);
-  } catch {
-    return { reply: text || "", product_ids: [] };
+    return await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY },
+      body: payload,
+      signal: AbortSignal.timeout(ms),
+    });
+  } catch (e) {
+    // Zaman aşımı ya da bağlantı hatası: yoğunluk gibi davran
+    console.error(`gemini timeout/network (${model}):`, String(e));
+    return new Response("timeout", { status: 504 });
   }
+}
+
+async function askGemini(system: string, history: { role: string; text: string }[]) {
+  const payload = JSON.stringify({
+    systemInstruction: { parts: [{ text: system }] },
+    contents: history.map((m) => ({ role: m.role === "user" ? "user" : "model", parts: [{ text: m.text }] })),
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 4096,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "OBJECT",
+        properties: {
+          reply: { type: "STRING" },
+          product_ids: { type: "ARRAY", items: { type: "STRING" } },
+        },
+        required: ["reply"],
+      },
+    },
+  });
+
+  let lastError = "";
+  let allBusy = true;
+  const deadline = Date.now() + TOTAL_TIMEOUT;
+  for (const model of MODELS) {
+    if (Date.now() > deadline - 2000) break;
+    // Yoğunluk (503/500) olursa ilk modeli 1 kez daha dene, sonra sıradakine geç
+    const tries = model === MODELS[0] ? 2 : 1;
+    for (let attempt = 0; attempt < tries; attempt++) {
+      const left = deadline - Date.now();
+      if (left < 2000) break;
+      const res = await callModel(model, payload, Math.min(MODEL_TIMEOUT, left));
+      if (res.ok) {
+        const data = await res.json();
+        const text = (data?.candidates?.[0]?.content?.parts ?? []).map((p: { text?: string }) => p.text ?? "").join("");
+        if (!text) { lastError = `${model}: boş cevap`; allBusy = false; break; }
+        try {
+          return JSON.parse(text);
+        } catch {
+          return { reply: text, product_ids: [] };
+        }
+      }
+      const body = (await res.text()).slice(0, 300);
+      lastError = `gemini ${res.status} (${model}): ${body}`;
+      console.error(lastError);
+      if (res.status === 504) break;                                                // zaman aşımı -> sıradaki model
+      if (res.status === 503 || res.status === 500) { await sleep(700); continue; }  // geçici yoğunluk
+      if (res.status !== 429) allBusy = false;
+      break; // 404 (model yok), 429 (kota) vb. -> sıradaki model
+    }
+    // 400/401/403 anahtar ya da istek hatasıdır, başka model denemek işe yaramaz
+    if (/gemini 40[013] /.test(lastError)) throw new Error(lastError);
+  }
+  if (allBusy) return { busy: true };
+  throw new Error(lastError || "gemini: cevap yok");
 }
 
 // ---------------- İstek ----------------
@@ -179,6 +247,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error(e);
-    return json({ reply: `Şu an bir sorun yaşıyorum. WhatsApp'tan yazarsanız hemen yardımcı olalım: ${WHATSAPP}`, product_ids: [], error: true });
+    const detail = String((e as Error)?.message ?? e).replace(/key=[^&\s]+/gi, "key=***").slice(0, 300);
+    return json({ reply: `Şu an bir sorun yaşıyorum. WhatsApp'tan yazarsanız hemen yardımcı olalım: ${WHATSAPP}`, product_ids: [], error: detail });
   }
 });

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<base href="/">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSR BİO Tarım</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css?v=20261105c">
+</head>
+<body data-page="404">
+<!--
+  Bu sayfa iki işe yarar:
+  1) Henüz SEO sayfası üretilmemiş yeni ürün/yazı adreslerini (/urun/..., /yazi/...) açar.
+  2) Diğer bulunamayan adreslerde "sayfa bulunamadı" gösterir.
+-->
+<main id="notFound" hidden>
+  <div class="container empty" style="padding:120px 20px">
+    <h1 style="font-size:30px;font-weight:500;margin-bottom:10px">Sayfa bulunamadı</h1>
+    <p style="margin-bottom:20px">Aradığınız sayfa taşınmış ya da kaldırılmış olabilir.</p>
+    <a href="index.html" class="btn btn--green">Anasayfaya Dön</a>
+  </div>
+</main>
+
+<script src="js/vendor/supabase.js"></script>
+<script src="js/config.js?v=20261105c"></script>
+<script src="js/render.js?v=20261105c"></script>
+<script src="js/common.js?v=20261105c"></script>
+<script>
+(function(){
+  var path = location.pathname;
+  var page = /\/urun\/[^/]+\/?$/.test(path) ? "product" : /\/yazi\/[^/]+\/?$/.test(path) ? "post" : "";
+  if(page){
+    var s = document.createElement("script");
+    s.src = "js/" + page + ".js?v=20261105c";
+    document.body.appendChild(s);
+  } else {
+    renderLayout("");
+    document.getElementById("notFound").hidden = false;
+  }
+})();
+</script>
+</body>
+</html>

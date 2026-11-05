@@ -270,3 +270,33 @@
 .admin-table__actions .is-danger:hover{ border-color:#a83232; color:#a83232; }
 
 .admin-table__review{max-width:320px;font-size:.85rem;color:var(--ink-soft)}
+
+/* Onay rozeti */
+.admin-badge{display:inline-block;background:#f5b400;color:#3a2a00;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px;font-family:var(--font-body)}
+.admin-table__actions .is-ok{background:#2f7d32;color:#fff;border-color:#2f7d32}
+
+/* Açıklama editörü */
+.rte{border:1px solid var(--paper-dim);border-radius:6px;background:var(--white);margin-top:6px;overflow:hidden}
+.rte__bar{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;background:var(--paper);border-bottom:1px solid var(--paper-dim)}
+.rte__bar button,.rte__docx{border:1px solid var(--paper-dim);background:var(--white);border-radius:4px;padding:4px 9px;font-size:.8rem;cursor:pointer;color:var(--ink);font-family:var(--font-body);text-transform:none;letter-spacing:0;font-weight:500}
+.rte__bar button:hover,.rte__docx:hover{border-color:var(--leaf);color:var(--leaf)}
+.rte__docx{margin-left:auto;background:#eef4e1}
+.rte__sep{width:1px;height:20px;background:var(--paper-dim);margin:0 2px}
+.rte__area{min-height:220px;max-height:520px;overflow:auto;padding:12px 14px;font-size:.92rem;line-height:1.65;outline:none;font-family:var(--font-body);text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)}
+.rte__area:empty::before{content:attr(data-placeholder);color:#999}
+.rte__area h2{font-size:1.25rem;margin:.6em 0 .3em}
+.rte__area h3{font-size:1.08rem;margin:.6em 0 .3em}
+.rte__area p{margin:.4em 0}
+.rte__area ul,.rte__area ol{padding-left:1.5em;margin:.4em 0}
+.rte__area table{border-collapse:collapse;margin:.6em 0}
+.rte__area td,.rte__area th{border:1px solid #ccc;padding:4px 8px}
+.rte span{display:inline;margin:0;font-size:inherit;font-weight:inherit;color:inherit}
+.rte .rte__sep{display:inline-block}
+.rte__area ul{list-style:disc}
+.rte__area ol{list-style:decimal}
+.cat-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:6px;padding:10px;border:1px solid var(--paper-dim);border-radius:6px;background:var(--paper)}
+.cat-check{display:flex;align-items:center;gap:7px;font-size:.88rem;cursor:pointer;color:var(--ink)}
+.cat-check input{width:auto;accent-color:var(--leaf)}
+.cat-checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:6px;padding:10px;border:1px solid var(--paper-dim);border-radius:6px;background:var(--paper)}
+.cat-check{display:flex;align-items:center;gap:7px;font-size:.88rem;cursor:pointer;color:var(--ink)}
+.cat-check input{width:auto;accent-color:var(--leaf)}

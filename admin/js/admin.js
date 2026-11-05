@@ -11,8 +11,7 @@
 // herhangi bir tarayıcı tarafı (frontend) dosyaya yazılmaz —
 // o anahtar RLS'i tamamen bypass eder ve herkes tarafından görülebilir hale gelir.
 // ==========================================================
-const SUPABASE_URL = "https://xrzonxgaoanhoijloyag.supabase.co";
-const SUPABASE_KEY = "sb_publishable_t_DLqABupEfr5goqtOW2JA_gwrFim-g";
+// SUPABASE_URL ve SUPABASE_KEY artık ../js/config.js dosyasından geliyor.
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const BUCKET = "product-images";
@@ -129,6 +128,8 @@ fieldImageFile.addEventListener("change", () => {
 function resetForm(){
   productForm.reset();
   productId.value = "";
+  rteSet("");
+  catSet("");
   imagePreview.hidden = true;
   formTitle.textContent = "Yeni Ürün Ekle";
   submitBtn.textContent = "Ürünü Kaydet";
@@ -144,7 +145,9 @@ function fillFormForEdit(product){
   fieldName.value = product.name || "";
   fieldBrand.value = product.brand || "";
   fieldCategory.value = product.category || "";
+  catSet(product.category || "");
   fieldDescription.value = product.description || "";
+  rteSet(product.description || "");
   fieldImgUrl.value = product.img_url || "";
   fieldImageFile.value = "";
   fieldActive.value = product.active_ingredient || "";
@@ -200,8 +203,8 @@ productForm.addEventListener("submit", async (e) => {
     const payload = {
       name: fieldName.value.trim(),
       brand: fieldBrand.value.trim(),
-      category: fieldCategory.value.trim(),
-      description: fieldDescription.value.trim(),
+      category: catGet(),
+      description: rteGet(),
       img_url: imgUrl,
       active_ingredient: fieldActive.value.trim(),
       formulation: fieldFormulation.value.trim(),
@@ -235,6 +238,8 @@ function resetFormKeepMessage(){
   const msg = formSuccess.textContent;
   productForm.reset();
   productId.value = "";
+  rteSet("");
+  catSet("");
   imagePreview.hidden = true;
   formTitle.textContent = "Yeni Ürün Ekle";
   submitBtn.textContent = "Ürünü Kaydet";
@@ -260,6 +265,7 @@ async function loadProducts(){
   }
 
   productCount.textContent = data.length ? `(${data.length})` : "";
+  fillDatalists(data);
 
   if(!data.length){
     listEmpty.hidden = false;
@@ -638,7 +644,8 @@ siteForm.addEventListener("submit", async (e) => {
       item_date: kind === "review" && siteEl("siteDate").value ? siteEl("siteDate").value : null,
       link: kind === "review" ? "" : siteEl("siteLink").value.trim(),
       img_url: kind === "review" ? "" : imgUrl,
-      sort_order: Number(siteEl("siteSort").value) || 0
+      sort_order: Number(siteEl("siteSort").value) || 0,
+      approved: true          // admin'in eklediği/düzenlediği içerik yayında
     };
 
     const { error } = id
@@ -672,8 +679,13 @@ async function loadSiteItems(){
     msg.textContent = "İçerikler yüklenemedi: " + friendlyError(error);
     return;
   }
+  // Onay bekleyen ziyaretçi yorumları en üstte
+  data.sort((a, b) => (a.approved === false ? 0 : 1) - (b.approved === false ? 0 : 1));
   SITE_ITEMS = data;
+  const pending = data.filter(x => x.approved === false).length;
   siteEl("siteCount").textContent = data.length ? `(${data.length})` : "";
+  const tab = document.querySelector('[data-tab="site"]');
+  if(tab) tab.innerHTML = `Slider / Referans / Yorum${pending ? ` <span class="admin-badge">${pending} onay bekliyor</span>` : ""}`;
   if(!data.length){ msg.textContent = "Henüz içerik eklenmemiş."; return; }
 
   siteEl("siteTableBody").innerHTML = data.map(it => `
@@ -681,10 +693,11 @@ async function loadSiteItems(){
       <td>${it.img_url
         ? `<img class="admin-table__thumb" src="${escapeHtml(it.img_url)}" alt="">`
         : `<span class="admin-table__thumb--empty">${it.kind === "review" ? "★" : "🌿"}</span>`}</td>
-      <td>${SITE_KIND_LABEL[it.kind] || escapeHtml(it.kind)}</td>
+      <td>${SITE_KIND_LABEL[it.kind] || escapeHtml(it.kind)}${it.approved === false ? `<br><span class="admin-badge">Onay bekliyor</span>` : ""}${it.kind === "review" && it.stars ? `<br><small>${"★".repeat(it.stars)}</small>` : ""}</td>
       <td class="admin-table__review">${escapeHtml(it.title || "")}${it.body ? `<br>${escapeHtml(it.body.slice(0, 80))}${it.body.length > 80 ? "…" : ""}` : ""}</td>
       <td>${it.sort_order ?? 0}</td>
       <td><div class="admin-table__actions">
+        ${it.approved === false ? `<button type="button" data-site-approve="${it.id}" class="is-ok">Onayla</button>` : ""}
         <button type="button" data-site-edit="${it.id}">Düzenle</button>
         <button type="button" data-site-delete="${it.id}" class="is-danger">Sil</button>
       </div></td>
@@ -694,6 +707,13 @@ async function loadSiteItems(){
 }
 
 siteEl("siteTableBody").addEventListener("click", async (e) => {
+  const approve = e.target.closest("[data-site-approve]");
+  if(approve){
+    const { error } = await sb.from("site_item").update({ approved: true }).eq("id", approve.dataset.siteApprove);
+    if(error){ alert("Onaylanamadı: " + friendlyError(error)); return; }
+    loadSiteItems();
+    return;
+  }
   const edit = e.target.closest("[data-site-edit]");
   const del = e.target.closest("[data-site-delete]");
   if(edit){
@@ -708,3 +728,103 @@ siteEl("siteTableBody").addEventListener("click", async (e) => {
   }
 });
 siteEl("siteRefreshBtn").addEventListener("click", loadSiteItems);
+
+
+// ==========================================================
+// AÇIKLAMA EDİTÖRÜ (Word'den yapıştır / .docx yükle)
+// ==========================================================
+const descEditor = document.getElementById("descEditor");
+const rteHint = document.getElementById("rteHint");
+
+// Eski kayıtlar düz metin (her satır bir madde) — editöre liste olarak gelsin
+function rteSet(value){
+  const v = String(value || "");
+  if(!v.trim()){ descEditor.innerHTML = ""; return; }
+  if(isRichText(v)){ descEditor.innerHTML = sanitizeHtml(v); return; }
+  const lines = v.split(/\r?\n/).map(l => l.replace(/^[-•*]\s*/, "").trim()).filter(Boolean);
+  descEditor.innerHTML = `<ul>${lines.map(l => `<li>${esc(l)}</li>`).join("")}</ul>`;
+}
+function rteGet(){
+  const text = descEditor.textContent.replace(/\s+/g, "");
+  return text ? sanitizeHtml(descEditor.innerHTML) : "";
+}
+
+document.getElementById("rteBar").addEventListener("mousedown", (e) => {
+  const btn = e.target.closest("button");
+  if(!btn) return;
+  e.preventDefault();                       // editördeki seçim kaybolmasın
+  descEditor.focus();
+  if(btn.dataset.cmd) document.execCommand(btn.dataset.cmd, false, null);
+  if(btn.dataset.block) document.execCommand("formatBlock", false, btn.dataset.block === "p" ? "P" : btn.dataset.block.toUpperCase());
+});
+
+// Word'den/web'den yapıştırırken stil çöpünü temizle
+descEditor.addEventListener("paste", (e) => {
+  const html = e.clipboardData && e.clipboardData.getData("text/html");
+  const text = e.clipboardData && e.clipboardData.getData("text/plain");
+  e.preventDefault();
+  if(html){
+    document.execCommand("insertHTML", false, sanitizeHtml(html));
+  } else if(text){
+    const paras = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    document.execCommand("insertHTML", false, paras.map(p => `<p>${esc(p)}</p>`).join(""));
+  }
+  rteHint.textContent = "Yapıştırılan metin temizlendi. Kaydetmeden önce kontrol et.";
+});
+
+// .docx dosyasını HTML'e çevir (mammoth)
+document.getElementById("docxFile").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if(!file) return;
+  if(!window.mammoth){ alert("Word dönüştürücü yüklenemedi, sayfayı yenileyip tekrar dene."); return; }
+  if(descEditor.textContent.trim() && !confirm("Mevcut açıklama Word dosyasındaki metinle değiştirilsin mi?")) return;
+  rteHint.textContent = "Word dosyası okunuyor...";
+  try{
+    const result = await window.mammoth.convertToHtml({ arrayBuffer: await file.arrayBuffer() });
+    descEditor.innerHTML = sanitizeHtml(result.value);
+    rteHint.textContent = `"${file.name}" içeri aktarıldı. Görseller aktarılmaz; kaydetmeden önce kontrol et.`;
+  } catch(err){
+    rteHint.textContent = "";
+    alert("Word dosyası okunamadı: " + (err.message || err));
+  }
+});
+
+// Marka ve kategori önerileri (mevcut ürünlerden)
+function fillDatalists(rows){
+  const uniq = (key, extra = []) => [...new Set([...extra, ...rows.map(r => (r[key] || "").trim()).filter(Boolean)])]
+    .sort((a, b) => a.localeCompare(b, "tr"));
+  document.getElementById("brandOptions").innerHTML = uniq("brand", ["KIMITEC", "AGRO ATP", "ALTINTAR"]).map(v => `<option value="${esc(v)}">`).join("");
+  // Ürünlerde kullanılmış ama listede olmayan kategoriler de kutucuk olarak eklensin
+  const used = rows.flatMap(r => splitCategories(r.category));
+  used.forEach(c => { if(!catOptions.some(o => trLower(o) === trLower(c))) catOptions.push(c); });
+  renderCatChecks();
+}
+
+
+// ==========================================================
+// KATEGORİLER (çoklu seçim) — liste js/config.js içindeki CATEGORIES
+// ==========================================================
+const catOptions = [...(typeof CATEGORIES !== "undefined" ? CATEGORIES : [])];
+const catChecks = document.getElementById("catChecks");
+const catExtra = document.getElementById("fieldCategoryExtra");
+
+function renderCatChecks(){
+  const checked = new Set(catGet(true));
+  catChecks.innerHTML = catOptions.map(c => `<label class="cat-check"><input type="checkbox" value="${esc(c)}" ${checked.has(c) ? "checked" : ""}> ${esc(c)}</label>`).join("");
+}
+function catSet(value){
+  const list = splitCategories(value);
+  const known = list.filter(c => catOptions.some(o => trLower(o) === trLower(c)))
+    .map(c => catOptions.find(o => trLower(o) === trLower(c)));
+  const extra = list.filter(c => !catOptions.some(o => trLower(o) === trLower(c)));
+  catChecks.querySelectorAll("input").forEach(cb => cb.checked = known.includes(cb.value));
+  catExtra.value = extra.join(", ");
+}
+function catGet(asArray){
+  const list = [...catChecks.querySelectorAll("input:checked")].map(cb => cb.value)
+    .concat(splitCategories(catExtra.value));
+  const uniqList = [...new Set(list)];
+  return asArray ? uniqList : uniqList.join(", ");
+}
+renderCatChecks();

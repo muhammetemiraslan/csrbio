@@ -26,8 +26,10 @@ async function getSiteItems(){
   const c = sb();
   if(!c) return [];
   try{
-    const { data, error } = await c.from("site_item").select("*").order("sort_order").order("created_at");
-    return error || !data ? [] : data;
+    // Onaylanmamış ziyaretçi yorumları gelmesin (approved sütunu yoksa eski sorguya dön)
+    let res = await c.from("site_item").select("*").eq("approved", true).order("sort_order").order("created_at");
+    if(res.error) res = await c.from("site_item").select("*").order("sort_order").order("created_at");
+    return res.error || !res.data ? [] : res.data;
   } catch(e){ return []; }
 }
 
@@ -64,7 +66,8 @@ function renderSlider(slides){
 // ---------------- Referanslar ----------------
 function renderRefs(refs){
   const list = refs.length ? refs : Array.from({ length: EMPTY_REFS }, () => ({}));
-  $("#refsTrack").innerHTML = list.map(r => wrapLink(r.link,
+  // Logoya tıklanınca o markanın ürünleri filtrelenir (admin'de özel link verilmediyse)
+  $("#refsTrack").innerHTML = list.map(r => wrapLink(r.link || (r.title ? brandUrl(r.title) : ""),
     r.img_url ? `<img src="${esc(r.img_url)}" alt="${esc(r.title || "Referans logosu")}" loading="lazy">` : "",
     r.img_url ? "refs__item" : "refs__item refs__item--empty")).join("");
 }
@@ -105,26 +108,39 @@ getSiteItems().then(items => {
 const state = { cats: new Set(), brands: new Set(), q: "", shown: PAGE_SIZE };
 let ALL = [];
 
+// Linkteki marka adı ürünlerdeki yazımla birebir olmayabilir (büyük/küçük harf, boşluk)
+function matchName(name, list){
+  const n = trLower(name).replace(/\s+/g, "");
+  if(!n) return "";
+  const hit = list.find(x => trLower(x).replace(/\s+/g, "") === n)
+           || list.find(x => { const k = trLower(x).replace(/\s+/g, ""); return k.includes(n) || n.includes(k); });
+  return hit || name;
+}
+
 function readUrl(){
   const sp = new URLSearchParams(location.search);
-  state.cats = new Set(sp.get("kategori") ? [sp.get("kategori")] : []);
+  const brands = [...new Set(ALL.map(p => p.brand).filter(Boolean))];
+  const cats = [...new Set(ALL.flatMap(p => p.categories))];
+  state.cats = new Set(sp.get("kategori") ? [matchName(sp.get("kategori"), cats)] : []);
+  state.brands = new Set(sp.get("marka") ? [matchName(sp.get("marka"), brands)] : []);
   state.q = sp.get("q") || "";
   state.shown = PAGE_SIZE;
   $$("#filter input[data-cat]").forEach(cb => cb.checked = state.cats.has(cb.value));
+  $$("#filter input[data-brand]").forEach(cb => cb.checked = state.brands.has(cb.value));
 }
 
 function filtered(){
-  const q = trLower(state.q);
   return ALL.filter(p =>
-    (!state.cats.size || state.cats.has(p.category)) &&
+    (!state.cats.size || p.categories.some(c => state.cats.has(c))) &&
     (!state.brands.size || state.brands.has(p.brand)) &&
-    (!q || trLower(p.name).includes(q) || trLower(p.brand).includes(q) || trLower(p.category).includes(q))
+    productMatches(p, state.q)
   );
 }
 
 function renderGrid(){
   const list = filtered();
   const grid = $("#productGrid");
+  grid.removeAttribute("data-prerendered");
   grid.innerHTML = list.length
     ? list.slice(0, state.shown).map(productCardHTML).join("")
     : `<div class="empty">${ALL.length ? "Seçtiğiniz filtrelere uygun ürün bulunamadı." : "Henüz ürün eklenmedi."}</div>`;
@@ -145,11 +161,15 @@ function checkboxes(items, attr){
 }
 
 getProducts().then(products => {
+  // Supabase'e ulaşılamazsa önceden üretilmiş ürün listesi kalsın
+  if(!products.length && $("#productGrid").dataset.prerendered) return;
   ALL = products;
   const cats = categoriesOf(products), brands = brandsOf(products);
-  $("#filterCats").innerHTML = cats.length ? checkboxes(cats, "data-cat") : `<p style="font-size:13px;color:#999">Kategori yok</p>`;
+  $("#filterCats").innerHTML = checkboxes(cats, "data-cat");
   $("#filterBrands").innerHTML = checkboxes(brands, "data-brand");
-  if(brands.length < 2) $("#brandGroup").classList.add("hidden");
+  // Ürünlerde kategori/marka girilmemişse o grup gizlenir
+  $("#filterCats").closest(".filter__group").classList.toggle("hidden", !cats.length);
+  $("#brandGroup").classList.toggle("hidden", !brands.length);
   readUrl();
   renderGrid();
 });
@@ -191,14 +211,74 @@ $("#filterToggle").onclick = () => $("#filter").classList.toggle("open");
 // Menüdeki kategori linkleri ve header araması aynı sayfadayken
 window.addEventListener("filters:url", () => { readUrl(); renderGrid(); });
 document.addEventListener("click", (e) => {
-  const a = e.target.closest('a[href^="index.html?kategori="]');
+  const a = e.target.closest('a[href^="index.html?kategori="], a[href^="index.html?marka="]');
   if(!a) return;
   e.preventDefault();
   history.replaceState(null, "", a.getAttribute("href"));
   readUrl(); renderGrid();
   $("#nav").classList.remove("open");
-  $("#urunler").scrollIntoView();
+  $("#urunler").scrollIntoView({ behavior: "smooth" });
 });
+
+// ---------------- Yorum ekle (ziyaretçi) ----------------
+// Gönderilen yorum admin panelde onaylanınca sitede görünür.
+(function reviewForm(){
+  const box = $("#yorumlar .reviews__box");
+  if(!box) return;
+  box.insertAdjacentHTML("afterend", `
+    <div class="review-add">
+      <button type="button" class="btn btn--green" id="reviewOpen">${ICON.star} Yorum Yap</button>
+      <form class="review-form hidden" id="reviewForm" novalidate>
+        <label>Adınız Soyadınız *<input type="text" name="name" maxlength="60" required placeholder="Örn. Ahmet Y."></label>
+        <div class="review-form__stars" role="radiogroup" aria-label="Puanınız">
+          ${[1, 2, 3, 4, 5].map(n => `<button type="button" data-star="${n}" aria-label="${n} yıldız">${ICON.star}</button>`).join("")}
+        </div>
+        <label>Yorumunuz *<textarea name="body" maxlength="600" required placeholder="Deneyiminizi paylaşın"></textarea></label>
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="review-form__actions">
+          <button type="submit" class="btn btn--green">Gönder</button>
+          <button type="button" class="btn btn--outline" id="reviewCancel">Vazgeç</button>
+        </div>
+        <p class="review-form__note">Yorumunuz onaylandıktan sonra yayınlanır.</p>
+      </form>
+    </div>`);
+
+  const form = $("#reviewForm");
+  let stars = 5;
+  const paint = () => $$("[data-star]", form).forEach(b => b.classList.toggle("on", Number(b.dataset.star) <= stars));
+  paint();
+  $(".review-form__stars", form).addEventListener("click", (e) => {
+    const b = e.target.closest("[data-star]");
+    if(b){ stars = Number(b.dataset.star); paint(); }
+  });
+  $("#reviewOpen").onclick = () => { form.classList.remove("hidden"); $("#reviewOpen").classList.add("hidden"); form.elements.name.focus(); };
+  $("#reviewCancel").onclick = () => { form.classList.add("hidden"); $("#reviewOpen").classList.remove("hidden"); };
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if(form.elements.website.value) return;                       // bot tuzağı
+    const name = form.elements.name.value.trim();
+    const body = form.elements.body.value.trim();
+    if(name.length < 2 || body.length < 5){ toast("Lütfen adınızı ve yorumunuzu yazın."); return; }
+    let last = 0;
+    try { last = Number(localStorage.getItem("csr_review_at") || 0); } catch(err){}
+    if(Date.now() - last < 60 * 60e3){ toast("Kısa süre önce yorum gönderdiniz, teşekkürler!"); return; }
+
+    const btn = form.querySelector('[type="submit"]');
+    btn.disabled = true;
+    const c = sb();
+    const { error } = c
+      ? await c.from("site_item").insert([{ kind: "review", title: name, body, stars, item_date: new Date().toISOString().slice(0, 10), approved: false, sort_order: 0 }])
+      : { error: true };
+    btn.disabled = false;
+    if(error){ toast("Yorum gönderilemedi, lütfen daha sonra tekrar deneyin."); return; }
+    try { localStorage.setItem("csr_review_at", String(Date.now())); } catch(err){}
+    form.reset(); stars = 5; paint();
+    form.classList.add("hidden");
+    $("#reviewOpen").classList.remove("hidden");
+    toast("Teşekkürler! Yorumunuz onaylandıktan sonra yayınlanacak.");
+  });
+})();
 
 // ---------------- Blog (son 3 yazı) ----------------
 getPosts().then(posts => {
