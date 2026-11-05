@@ -108,12 +108,26 @@ getSiteItems().then(items => {
 const state = { cats: new Set(), brands: new Set(), q: "", shown: PAGE_SIZE };
 let ALL = [];
 
-// Linkteki marka adı ürünlerdeki yazımla birebir olmayabilir (büyük/küçük harf, boşluk)
+// Linkteki marka adı ürünlerdeki yazımla birebir olmayabilir:
+// büyük/küçük harf, boşluk, tire farkı ve 1-2 harflik yazım hatası tolere edilir ("Argo ATP" -> "AGRO ATP")
+const normName = (x) => trLower(x).replace(/[^a-z0-9çğöşü]/g, "");
+function editDistance(a, b){
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for(let j = 1; j <= b.length; j++) d[0][j] = j;
+  for(let i = 1; i <= a.length; i++)
+    for(let j = 1; j <= b.length; j++)
+    {
+      d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+      if(i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);   // yer değiştirmiş harfler
+    }
+  return d[a.length][b.length];
+}
 function matchName(name, list){
-  const n = trLower(name).replace(/\s+/g, "");
+  const n = normName(name);
   if(!n) return "";
-  const hit = list.find(x => trLower(x).replace(/\s+/g, "") === n)
-           || list.find(x => { const k = trLower(x).replace(/\s+/g, ""); return k.includes(n) || n.includes(k); });
+  const hit = list.find(x => normName(x) === n)
+           || list.find(x => { const k = normName(x); return k && (k.includes(n) || n.includes(k)); })
+           || list.map(x => [x, editDistance(normName(x), n)]).filter(([, d]) => d <= 2 && n.length >= 4).sort((a, b) => a[1] - b[1]).map(([x]) => x)[0];
   return hit || name;
 }
 
